@@ -1,13 +1,10 @@
 import httpx
-from api.gateways.external_interfaces.edgar_api_client import EdgarApiClient
-from core.config.app_config import Settings
+from domain.usecases.services.edgar_api_service import EdgarApiService
 
-class EdgarApiClientImpl(EdgarApiClient):
-
-    __settings : Settings
+class EdgarApiServiceImpl(EdgarApiService):
 
     def __init__(self):
-        self.__settings = Settings()
+        pass
         # cik 목록 url
         # self.api_url = "https://www.sec.gov/files/company_tickers_exchange.json"
         
@@ -17,11 +14,9 @@ class EdgarApiClientImpl(EdgarApiClient):
             url: str,
             headers: dict,
             params: dict
-            ):
+            ) -> str:
         
-        # 삭제 예정
-        headers.update({'User-Agent': self.__settings.USER_AGENT})
         async with httpx.AsyncClient() as client:
             data = await client.get(url, headers=headers, params=params)
-        return data
+        return data.text
         
