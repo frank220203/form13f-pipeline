@@ -1,7 +1,7 @@
 # conftest.py
 import pytest
 from httpx import ASGITransport, AsyncClient
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import MagicMock
 from collections.abc import AsyncGenerator, Generator
 from fastapi.testclient import TestClient
 from main import app
@@ -20,6 +20,12 @@ async def async_client() -> AsyncGenerator[AsyncClient, None, None]:
 def client() -> Generator[TestClient, None, None]:
       with TestClient(app) as c:
             yield c
+
+# kafka_service Mock
+@pytest.fixture(scope="module")
+def mock_kafka_service() -> MagicMock:
+      mock_kafka_service = MagicMock()
+      return mock_kafka_service
 
 # paser_service Mock
 @pytest.fixture(scope="module")
