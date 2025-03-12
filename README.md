@@ -2,7 +2,8 @@
 
 ### 개요
 - 개발 환경 : FastAPI, uvicorn
-- 아키텍처 : 클린아키텍처, MSA
+- 아키텍처 : 클린아키텍처, MSA(Kafka)
+- 수집 시스템 아키텍처 ```Airflow(stream) -> Uvicorn -> Kafka -> MongoDB(Local Storage) -> Kafka(fin)``` ==외부 App==> ```Kafka(fin 구독) -> MongoDB 조회 -> 외부 App DB(Shared Storage)```
 - 개발 방법 : 객체지향 + FastAPI 탬플릿 혼용, TDD
 
 ### FastAPI 설치 방법
@@ -34,4 +35,9 @@ pip install trio
 pytest
 # 단일 테스트 실행
 pytest -k "test_get_portfolios_urls" ./tests/api/controllers/test_fillings_controller.py
+```
+
+### Kafka
+```bash
+pip install kafka-python
 ```
