@@ -17,9 +17,9 @@ class FillingsController:
     @fillings_router.get("/documents")
     async def get_documents_urls(
         self,
-        endpoint: str = Query(..., description="ex) /cgi-bin/browse-edgar/getcompany"),
-        email: str = Query(..., description="SEC EDGAR의 정책으로 User-Agent로 회사 메일 요구"),
         cik: str = Query(..., description="10자리의 중앙 인덱스 키, ex) 0001067983"),
+        email: str = Query(..., description="SEC EDGAR의 정책으로 User-Agent로 회사 메일 요구"),
+        endpoint: str = Query(..., description="ex) /cgi-bin/browse-edgar/getcompany"),
         type: Optional[str] = Query(None, description="문서유형, ex) 13F-HR"),
         owner: Optional[str] = Query(None, description="소유자"),
         dateb: Optional[str] = Query(None, description="end date"),
@@ -28,26 +28,41 @@ class FillingsController:
         fillings_usecase: FillingsUsecase = Depends(get_fillings_usecase)
     ) -> JSONResponse:
         """
-        Documents URLS 반환.
+        Documents URLs 반환.
         """
         urls = await fillings_usecase.get_documents_urls(endpoint, email, cik, type, owner, dateb, count, search_text)
 
         return JSONResponse(content={"urls": urls}, status_code=status.HTTP_200_OK)
     
     @fillings_router.get("/portfolios")
-    async def get_portfolios_urls(
+    async def get_portfolios(
         self,
         email: str = Query(..., description="SEC EDGAR의 정책으로 User-Agent로 회사 메일 요구"),
         endpoint: str = Query(..., description="ex) /Archives/edgar/data/1067983/000095012324011775/0000950123-24-011775-index.htm"),
         fillings_usecase: FillingsUsecase = Depends(get_fillings_usecase)
     ) -> JSONResponse:
         """
-        Portfolio URL 반환.
+        Portfolios URLs 반환.
         """
 
-        urls = await fillings_usecase.get_portfolios_urls(email, endpoint)
+        portfolios = await fillings_usecase.get_portfolios(email, endpoint)
 
-        return JSONResponse(content={"porfolios_urls": urls}, status_code=status.HTTP_200_OK)
+        return JSONResponse(content={"porfolios": portfolios}, status_code=status.HTTP_200_OK)
+    
+    @fillings_router.get("/portfolio/issuers")
+    async def get_portfolio_issuers(
+        self,
+        email: str = Query(..., description="SEC EDGAR의 정책으로 User-Agent로 회사 메일 요구"),
+        endpoint: str = Query(..., description="ex) /Archives/edgar/data/1067983/000095012324011775/xslForm13F_X02/36917.xml"),
+        fillings_usecase: FillingsUsecase = Depends(get_fillings_usecase)
+    ) -> JSONResponse:
+        """
+        Portfolio Isseurs 반환.
+        """
+
+        issuers = await fillings_usecase.get_portfolio_issuers(email, endpoint)
+
+        return JSONResponse(content={"porfolio_issuers": issuers}, status_code=status.HTTP_200_OK)
     
     def get_router(self):
         return fillings_router

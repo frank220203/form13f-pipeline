@@ -7,5 +7,9 @@ class PaserService(ABC):
         pass
 
     @abstractmethod
-    def find_portfolios_urls(self, data:str) -> List[str]:
+    def find_portfolios(self, data: str) -> dict:
+        pass
+
+    @abstractmethod
+    def find_portfolio_issuers(self, data: str) -> List[dict]:
         pass
