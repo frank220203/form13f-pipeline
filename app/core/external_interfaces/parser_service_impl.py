@@ -30,14 +30,14 @@ class PaserServiceImpl(PaserService):
         portfolio_meta = {}
 
         for f in form:
-            for ih, i in zip(f.find_all('div', class_='infoHead'), f.find_all('div', class_='info')):
-                portfolio_meta.update({
-                    ih.text: i.text
-                })
+            for ih, i in zip(
+                f.find_all('div', class_='infoHead'), 
+                f.find_all('div', class_='info')
+                ):
+                portfolio_meta.update({ih.text: i.text})
+
         form = soup.find('span', class_= 'companyName')
-        portfolio_meta.update({
-            'cik': form.find('a').text[:9]
-        })
+        portfolio_meta.update({'cik': form.find('a').text[:9]})
 
         ## url
         table = soup.find('table', {'class': 'tableFile'})
@@ -65,13 +65,13 @@ class PaserServiceImpl(PaserService):
 
         return portfolios
     
-    def find_portfolio_issuers(self, data: str) -> List[dict]:
+    def find_portfolio_issuers(self, data: str, meta: str) -> List[dict]:
         # tag : table, tr, td, a // attribute : class, href
         soup = BeautifulSoup(data, 'html.parser')
         # 포트폴리오는 테이블에 class가 없고, 두 번째 테이블에 상장회사 정보가 담겨 있다.
         table = soup.find('table', {'summary': 'Form 13F-NT Header Information'})
         # print(table)
-        issuers = []
+        issuers = [meta]
 
         # 1~3 행은 헤더이므로 제외, tr내부 요소를 배열로 받음
         for row in table.find_all('tr')[3:]:

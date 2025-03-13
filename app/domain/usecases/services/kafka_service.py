@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 
 class KafkaService(ABC):
     @abstractmethod
-    def produce_message(self, msg: str) -> None:
+    def produce_portfolio(self, msg: str) -> None:
         pass
 
     @abstractmethod
