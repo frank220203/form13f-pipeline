@@ -52,6 +52,7 @@ class FillingsController:
     @fillings_router.get("/portfolio/issuers")
     async def get_portfolio_issuers(
         self,
+        meta: str = Query(..., description="ex) {'meta': {'Accepted': '2024-11-14 16:05:04', 'Documents': '2', 'Effectiveness Date': '2024-11-14', 'Filing Date': '2024-11-14', ...} }"),
         email: str = Query(..., description="SEC EDGAR의 정책으로 User-Agent로 회사 메일 요구"),
         endpoint: str = Query(..., description="ex) /Archives/edgar/data/1067983/000095012324011775/xslForm13F_X02/36917.xml"),
         fillings_usecase: FillingsUsecase = Depends(get_fillings_usecase)
@@ -60,7 +61,7 @@ class FillingsController:
         Portfolio Isseurs 반환.
         """
 
-        issuers = await fillings_usecase.get_portfolio_issuers(email, endpoint)
+        issuers = await fillings_usecase.get_portfolio_issuers(meta, email, endpoint)
 
         return JSONResponse(content={"porfolio_issuers": issuers}, status_code=status.HTTP_200_OK)
     

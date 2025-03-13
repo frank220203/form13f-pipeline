@@ -32,7 +32,18 @@ class FillingsUsecase:
             count: Optional[int] = 0, 
             search_text: Optional[str] = ""
     ) -> List[str]:
-        request_dto = FillingsRequestDto(headers={'User-Agent': email}, params={'CIK': cik, 'type': type, 'owner': owner, 'dateb': dateb, 'count': count, 'search_text': search_text}, endpoint=endpoint)
+        request_dto = FillingsRequestDto(
+            headers={'User-Agent': email}, 
+            params={
+                'CIK': cik, 
+                'type': type, 
+                'owner': owner, 
+                'dateb': dateb, 
+                'count': count, 
+                'search_text': search_text
+                }, 
+            endpoint=endpoint
+            )
         data = await self.__edgar_api_service.get_fillings_list(request_dto.url, request_dto.headers, request_dto.params)
         urls = self.__paser_service.find_documents_urls(data)
         return urls
@@ -49,11 +60,12 @@ class FillingsUsecase:
     
     async def get_portfolio_issuers(
             self,
+            meta: str,
             email: str,
             endpoint: str
     ) -> List[dict]:
         request_dto = FillingsRequestDto(headers={'User-Agent': email}, params={}, endpoint=endpoint)
         data = await self.__edgar_api_service.get_fillings_list(request_dto.url, request_dto.headers, request_dto.params)
-        issuers = self.__paser_service.find_portfolio_issuers(data)
-        self.__kafka_service.produce_message(issuers)
+        issuers = self.__paser_service.find_portfolio_issuers(data, meta)
+        self.__kafka_service.produce_portfolio(issuers)
         return issuers

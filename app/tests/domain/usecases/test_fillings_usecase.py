@@ -1,4 +1,6 @@
+import json
 import pytest
+
 from unittest.mock import MagicMock, AsyncMock
 from domain.usecases.fillings_usecase import FillingsUsecase
 
@@ -48,13 +50,22 @@ async def test_get_portfolio_issuers(
     mock_edgar_api_service: MagicMock   
 ) -> None:
     # Given & Mock
+    meta = json.dumps({'meta':'data'})
     mock_parser_service.find_portfolio_issuers.return_value = ['stock1', 'stock2']
     mock_edgar_api_service.get_fillings_list = AsyncMock()
     mock_edgar_api_service.get_fillings_list.return_value = "<html><body><table class='tableFile'><tr><th>Description</th></tr><tr><td></td><td>13F-HR</td><td><a href='url1'> Documents</a></td></tr><tr><td></td><td>13F-HR</td><td><a href='url2'> Documents</a></td></tr></table></body></html>"
 
     # When & Mocking
-    fillings_usecase = FillingsUsecase(mock_kafka_service, mock_parser_service, mock_edgar_api_service)
-    urls = await fillings_usecase.get_portfolio_issuers(email="sample@email.com", endpoint="/Archives/edgar/data/1067983/000095012324011775/xslForm13F_X02/36917.xml")
+    fillings_usecase = FillingsUsecase(
+        mock_kafka_service, 
+        mock_parser_service, 
+        mock_edgar_api_service
+        )
+    urls = await fillings_usecase.get_portfolio_issuers(
+        meta=meta, 
+        email="sample@email.com", 
+        endpoint="/Archives/edgar/data/1067983/000095012324011775/xslForm13F_X02/36917.xml"
+        )
 
     # Then
     assert urls == ['stock1', 'stock2']

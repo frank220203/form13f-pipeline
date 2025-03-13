@@ -1,4 +1,6 @@
+import json
 import pytest
+
 from httpx import AsyncClient
 from unittest.mock import MagicMock, AsyncMock
 from main import app
@@ -38,7 +40,7 @@ async def test_get_portfolios(
     mock_fillings_usecase.get_portfolios.return_value = {'meta':'data', 'urls':['url1', 'url2']}
 
     # Mocking
-    app.dependency_overrides[get_fillings_usecase] = lambda: mock_fillings_usecase
+    # app.dependency_overrides[get_fillings_usecase] = lambda: mock_fillings_usecase
 
     # When
     response = await async_client.get(f"{settings.API_V1_STR}/fillings/portfolios?email=sample@email.com&endpoint=/Archives/edgar/data/1067983/000095012324011775/0000950123-24-011775-index.htm")
@@ -54,6 +56,7 @@ async def test_get_portfolio_issuers(
     mock_fillings_usecase: MagicMock
 ) -> None:
     # Mock
+    meta = json.dumps({'meta':'data'})
     mock_fillings_usecase.get_portfolio_issuers = AsyncMock()
     mock_fillings_usecase.get_portfolio_issuers.return_value = ["stock1", "stock2"]
 
@@ -61,7 +64,9 @@ async def test_get_portfolio_issuers(
     # app.dependency_overrides[get_fillings_usecase] = lambda: mock_fillings_usecase
 
     # When
-    response = await async_client.get(f"{settings.API_V1_STR}/fillings/portfolio/issuers?email=sample@email.com&endpoint=/Archives/edgar/data/1067983/000095012324011775/xslForm13F_X02/36917.xml")
+    response = await async_client.get(
+        f"{settings.API_V1_STR}/fillings/portfolio/issuers?email=sample@email.com&endpoint=/Archives/edgar/data/1067983/000095012324011775/xslForm13F_X02/36917.xml&meta={meta}",
+        )
 
     # Then
     assert response.status_code == 200
