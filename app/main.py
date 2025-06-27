@@ -5,14 +5,18 @@
 from fastapi import FastAPI
 
 # from app/~ import ~~~
+from api.deps import di_manager
 from api.routes.api_routes import ApiRoutes
-from core.config.app_config import Settings
 
-settings = Settings()
+config_manager = di_manager.get_config_manager()
+api_version = config_manager.get_api_version()
+
 app = FastAPI(
-    title=settings.PROJECT_NAME,
-    openapi_url=f"{settings.API_V1_STR}/openapi.json"
+    title=config_manager.get_project_name(),
+    openapi_url=f"{api_version}/openapi.json"
 )
 
 router = ApiRoutes()
-app.include_router(router.get_router(), prefix=settings.API_V1_STR)
+app.include_router(router.get_router(), prefix=api_version)
+
+# Kafka 인스턴스 추가
