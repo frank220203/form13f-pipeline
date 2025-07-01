@@ -2,9 +2,13 @@ from abc import ABC, abstractmethod
 
 class KafkaService(ABC):
     @abstractmethod
-    def produce_portfolio(self, msg: str) -> None:
+    async def publish(self, topic:str, msg: str) -> None:
         pass
 
     @abstractmethod
-    def consume_messages(self) -> dict:
+    async def start(self) -> None:
+        pass
+
+    @abstractmethod
+    async def stop(self) -> None:
         pass

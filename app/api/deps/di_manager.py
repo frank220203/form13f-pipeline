@@ -1,4 +1,4 @@
-from fastapi import Depends
+from fastapi import Depends, Request
 
 from core.config import Settings
 from core.external_interfaces.kafka_service_impl import KafkaServiceImpl
@@ -18,18 +18,22 @@ from domain.usecases.fillings_usecase import FillingsUsecase
 def get_config_manager() -> ConfigManager:
     return Settings()
 
+## Connection
+def get_kafka_connection() -> KafkaService:
+    return KafkaServiceImpl(get_config_manager())
+
 ## Services
 def get_paser_service() -> PaserService:
     return PaserServiceImpl()
-def get_kafka_service() -> KafkaService:
-    return KafkaServiceImpl()
+def get_kafka_service(request: Request) -> KafkaService:
+    return request.app.state.kafka_service
 def get_edgar_api_service() -> EdgarApiService:
     return EdgarApiServiceImpl()
 
 ## Usecases
 def get_fillings_usecase(
-        paser_service: PaserService = Depends(get_paser_service),
         kafka_service: KafkaService = Depends(get_kafka_service),
+        paser_service: PaserService = Depends(get_paser_service),
         edgar_api_service: EdgarApiService = Depends(get_edgar_api_service)
 ) -> FillingsUsecase:
-    return FillingsUsecase(paser_service, kafka_service, edgar_api_service)
+    return FillingsUsecase(kafka_service, paser_service, edgar_api_service)
