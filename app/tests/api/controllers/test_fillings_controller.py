@@ -1,18 +1,21 @@
 import json
 import pytest
 
-from httpx import AsyncClient
+from fastapi.testclient import TestClient
 from unittest.mock import MagicMock, AsyncMock
-from main import app
-from core.config.app_config import Settings
-from api.deps.di_manager import get_fillings_usecase
 
-settings = Settings()
+from api.deps import di_manager
+from api.deps.di_manager import get_fillings_usecase
+from main import app
+
+config_manager = di_manager.get_config_manager()
+api_version = config_manager.get_api_version()
 
 # get_documents_urls 단위 테스트
 @pytest.mark.anyio
 async def test_get_documents_urls(
-    async_client: AsyncClient,
+    # async_client: AsyncClient,
+    client: TestClient,
     mock_fillings_usecase: MagicMock
     ) -> None:
     # Mock
@@ -23,7 +26,9 @@ async def test_get_documents_urls(
     app.dependency_overrides[get_fillings_usecase] = lambda: mock_fillings_usecase
 
     # When
-    response = await async_client.get(f"{settings.API_V1_STR}/fillings/documents?endpoint=/cgi-bin/browse-edgar/getcompany&email=test@email.com&cik=0001067983")
+    # TestClient 자체는 동기적으로 작동하기 때문에 await 쓰지 않음
+    # response = await client.get(f"{api_version}/fillings/documents?endpoint=/cgi-bin/browse-edgar/getcompany&email=test@email.com&cik=0001067983")
+    response = client.get(f"{api_version}/fillings/documents?endpoint=/cgi-bin/browse-edgar/getcompany&email=test@email.com&cik=0001067983")
 
     # Then
     assert response.status_code == 200
@@ -32,7 +37,7 @@ async def test_get_documents_urls(
 # get_portfolios_urls 단위 테스트
 @pytest.mark.anyio
 async def test_get_portfolios(
-    async_client: AsyncClient,
+    client: TestClient,
     mock_fillings_usecase: MagicMock
     ) -> None:
     # Mock
@@ -40,10 +45,10 @@ async def test_get_portfolios(
     mock_fillings_usecase.get_portfolios.return_value = {'meta':'data', 'urls':['url1', 'url2']}
 
     # Mocking
-    # app.dependency_overrides[get_fillings_usecase] = lambda: mock_fillings_usecase
+    app.dependency_overrides[get_fillings_usecase] = lambda: mock_fillings_usecase
 
     # When
-    response = await async_client.get(f"{settings.API_V1_STR}/fillings/portfolios?email=sample@email.com&endpoint=/Archives/edgar/data/1067983/000095012324011775/0000950123-24-011775-index.htm")
+    response = client.get(f"{api_version}/fillings/portfolios?email=sample@email.com&endpoint=/Archives/edgar/data/1067983/000095012324011775/0000950123-24-011775-index.htm")
 
     # Then
     assert response.status_code == 200
@@ -52,7 +57,7 @@ async def test_get_portfolios(
 # get_portfolios_issuers 단위 테스트
 @pytest.mark.anyio
 async def test_get_portfolio_issuers(
-    async_client: AsyncClient,
+    client: TestClient,
     mock_fillings_usecase: MagicMock
 ) -> None:
     # Mock
@@ -64,9 +69,7 @@ async def test_get_portfolio_issuers(
     # app.dependency_overrides[get_fillings_usecase] = lambda: mock_fillings_usecase
 
     # When
-    response = await async_client.get(
-        f"{settings.API_V1_STR}/fillings/portfolio/issuers?email=sample@email.com&endpoint=/Archives/edgar/data/1067983/000095012324011775/xslForm13F_X02/36917.xml&meta={meta}",
-        )
+    response = client.get(f"{api_version}/fillings/portfolio/issuers?email=sample@email.com&endpoint=/Archives/edgar/data/1067983/000095012324011775/xslForm13F_X02/36917.xml&meta={meta}")
 
     # Then
     assert response.status_code == 200

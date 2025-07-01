@@ -12,8 +12,8 @@ from domain.usecases.services.edgar_api_service import EdgarApiService
 # issuer : 상장회사
 class FillingsUsecase:
 
-    __kafka_service: KafkaService
     __paser_service: PaserService
+    __kafka_service: KafkaService
     __edgar_api_service: EdgarApiService
     
     def __init__(self, kafka_service: KafkaService, paser_service: PaserService, edgar_api_service: EdgarApiService):
@@ -67,5 +67,5 @@ class FillingsUsecase:
         request_dto = FillingsRequestDto(headers={'User-Agent': email}, params={}, endpoint=endpoint)
         data = await self.__edgar_api_service.get_fillings_list(request_dto.url, request_dto.headers, request_dto.params)
         issuers = self.__paser_service.find_portfolio_issuers(data, meta)
-        self.__kafka_service.produce_portfolio(issuers)
+        await self.__kafka_service.publish("portfolio",issuers)
         return issuers

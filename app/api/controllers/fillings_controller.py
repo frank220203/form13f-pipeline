@@ -30,7 +30,7 @@ class FillingsController:
         """
         Documents URLs 반환.
         """
-        urls = await fillings_usecase.get_documents_urls(endpoint, email, cik, type, owner, dateb, count, search_text)
+        urls = await fillings_usecase.get_documents_urls(email, endpoint, cik, type, owner, dateb, count, search_text)
 
         return JSONResponse(content={"urls": urls}, status_code=status.HTTP_200_OK)
     
