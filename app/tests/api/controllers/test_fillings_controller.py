@@ -45,7 +45,7 @@ async def test_get_portfolios(
     mock_fillings_usecase.get_portfolios.return_value = {'meta':'data', 'urls':['url1', 'url2']}
 
     # Mocking
-    app.dependency_overrides[get_fillings_usecase] = lambda: mock_fillings_usecase
+    # app.dependency_overrides[get_fillings_usecase] = lambda: mock_fillings_usecase
 
     # When
     response = client.get(f"{api_version}/fillings/portfolios?email=sample@email.com&endpoint=/Archives/edgar/data/1067983/000095012324011775/0000950123-24-011775-index.htm")
