@@ -13,6 +13,8 @@ class Settings(BaseSettings, ConfigManager):
     PROJECT_NAME: str
     USER_AGENT: str
     KAFKA_BROKER_IP: str
+    KAFKA_TOPIC: str
+    KAFKA_GROUP_PF: str
 
     def get_api_version(self) -> str:
         return self.API_VERSION
@@ -28,3 +30,9 @@ class Settings(BaseSettings, ConfigManager):
     
     def get_kafka_broker_ip(self) -> str:
         return self.KAFKA_BROKER_IP
+    
+    def get_kafka_topic(self) -> str:
+        return self.KAFKA_TOPIC
+    
+    def get_kafka_group_pf(self) -> str:
+        return self.KAFKA_GROUP_PF

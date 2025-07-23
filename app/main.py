@@ -25,7 +25,9 @@ async def lifespan(app: FastAPI):
     kafka_connector = di_manager.get_kafka_connection()
     await kafka_connector.start()
     app.state.kafka_service = kafka_connector
-    logger.info("Kafka producer stored in app.state.")
+    logger.info("Kafka service stored in app.state.")
+    await kafka_connector.consume()
+    logger.info("Kafka consumer is working")
 
     yield
 
@@ -33,7 +35,7 @@ async def lifespan(app: FastAPI):
     logger.info("Application lifespan shutdown initiated.")
     if hasattr(app.state, 'kafka_service') and app.state.kafka_service:
         await app.state.kafka_service.stop()
-        logger.info("Kafka producer stopped during shutdown.")
+        logger.info("Kafka service stopped during shutdown.")
 
 # FastAPI 실행
 app = FastAPI(
