@@ -1,6 +1,5 @@
 import json
 import pytest
-
 from unittest.mock import MagicMock, AsyncMock
 from domain.usecases.fillings_usecase import FillingsUsecase
 

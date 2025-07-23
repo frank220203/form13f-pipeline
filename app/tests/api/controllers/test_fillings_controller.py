@@ -1,9 +1,7 @@
 import json
 import pytest
-
 from fastapi.testclient import TestClient
 from unittest.mock import MagicMock, AsyncMock
-
 from api.deps import di_manager
 from api.deps.di_manager import get_fillings_usecase
 from main import app

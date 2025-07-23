@@ -20,3 +20,11 @@ class ConfigManager(ABC):
     @abstractmethod
     def get_kafka_broker_ip(self) -> str:
         pass
+
+    @abstractmethod
+    def get_kafka_topic(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_kafka_group_pf(self) -> str:
+        pass

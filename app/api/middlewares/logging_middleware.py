@@ -18,7 +18,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         start_time = time.time()
         request_body_str = None
 
-        if request.method in ["POST", "PUT", "PATCH"]:            
+        if request.method in ["POST", "PUT", "PATCH"]:
             try:
                 request_body = request.body()
 
@@ -26,7 +26,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                     request_body_str = request_body.decode('utf-8')
                     request._body = request_body
 
-                    if 'application/json' in request.headers.get('content-type', ''):                        
+                    if 'application/json' in request.headers.get('content-type', ''):
                         try:
                             request_body_json = json.loads(request_body_str)
                             self.logger.info(f"[Request - {request.method}][{request.url}][{request.client.host}:{request.client.port}] --- Request Body : {request_body_json}")
@@ -42,6 +42,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         response = Response("Internal Server Error", status_code=500)
         response_body = None
         response_body_bytes = b""
+        ori_response = None
 
         try:
             ori_response = await call_next(request)
@@ -74,6 +75,8 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         finally:
             process_time = time.time() - start_time
             log_msg = f"[Response - {response.status_code}][{request.client.host}:{request.client.port}] --- Response Body : {response_body} --- {process_time:.4f}s"
+            # 포트폴리오 반환값이 긴 경우 임시로 빈 값 줌
+            # log_msg = ""
 
             if response.status_code >= 500:
                 self.logger.error(log_msg)
@@ -81,5 +84,4 @@ class LoggingMiddleware(BaseHTTPMiddleware):
                 self.logger.warning(log_msg)
             else:
                 self.logger.info(log_msg)
-
         return response

@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-
 from api.controllers.fillings_controller import FillingsController
 
 class ApiRoutes:
