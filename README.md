@@ -40,10 +40,12 @@ uvicorn main:app --port 8001 --reload
 pip install pytest
 # 비동기 요청 테스트 라이브러리
 pip install trio
+# pytest 비동기 타임아웃 기능 라이브러리
+pip install pytest-timeout
 # test.py 만들고, 테스트 실행
 pytest
-# 단일 테스트 실행
-pytest -k "test_get_portfolios_urls" ./tests/api/controllers/test_fillings_controller.py
+# 단일 테스트 실행 (타임아웃이 필요할 경우)
+pytest -k "test_get_portfolios_urls" ./tests/api/controllers/test_fillings_controller.py (--timeout=5)
 ```
 
 ### Kafka (kafka-python -> aiokafka 변경)
