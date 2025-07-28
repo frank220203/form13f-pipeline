@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-class KafkaService(ABC):
+class MessageHandler(ABC):
     @abstractmethod
     async def stop(self) -> None:
         pass
@@ -14,5 +14,5 @@ class KafkaService(ABC):
         pass
 
     @abstractmethod
-    async def consume(self) -> None:
+    async def read(self) -> None:
         pass

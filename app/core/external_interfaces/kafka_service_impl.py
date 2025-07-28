@@ -1,9 +1,9 @@
 import json
 from aiokafka import AIOKafkaConsumer, AIOKafkaProducer
 from core.config import Settings
-from domain.usecases.services.kafka_service import KafkaService
+from domain.usecases.services.message_handler import MessageHandler
 
-class KafkaServiceImpl(KafkaService):
+class KafkaServiceImpl(MessageHandler):
 
     __consumer: AIOKafkaConsumer
     __producer: AIOKafkaProducer
@@ -30,7 +30,7 @@ class KafkaServiceImpl(KafkaService):
         # 중복 메시지 처리 로직 필요
         await self.__producer.send(topic, json.dumps(msg).encode('utf-8'))
 
-    async def consume(self) -> None:
+    async def read(self) -> None:
         async for msg in self.__consumer:
             msg_to_str = msg.value.decode("utf-8")
             print(msg_to_str)

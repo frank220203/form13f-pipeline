@@ -23,11 +23,11 @@ def client() -> Generator[TestClient, None, None]:
       with TestClient(app=app) as c:
             yield c
 
-# kafka_service Mock
+# api_caller Mock
 @pytest.fixture(scope="module")
-def mock_kafka_service() -> AsyncMock:
-      mock_kafka_service = AsyncMock()
-      return mock_kafka_service
+def mock_api_caller() -> MagicMock:
+      mock_api_caller = MagicMock()
+      return mock_api_caller
 
 # paser_service Mock
 @pytest.fixture(scope="module")
@@ -35,11 +35,11 @@ def mock_parser_service() -> MagicMock:
       mock_parser_service = MagicMock()
       return mock_parser_service
 
-# edgar_api_service Mock
+# massege_handler Mock
 @pytest.fixture(scope="module")
-def mock_edgar_api_service() -> MagicMock:
-      mock_edgar_api_service = MagicMock()
-      return mock_edgar_api_service
+def mock_message_handler() -> AsyncMock:
+      mock_message_handler = AsyncMock()
+      return mock_message_handler
 
 # fillings_usecase Mock
 @pytest.fixture(scope="module")

@@ -8,7 +8,7 @@ from contextlib import asynccontextmanager
 # from app/~ import ~~~
 from api.deps import di_manager
 from api.routes.api_routes import ApiRoutes
-from api.middlewares.logging_middleware import LoggingMiddleware
+from core.middlewares.logging_middleware import LoggingMiddleware
 
 # 로거
 logger = di_manager.get_logger_manager().get_logger()
@@ -24,10 +24,10 @@ async def lifespan(app: FastAPI):
     # Kafka 실행
     kafka_connector = di_manager.get_kafka_connection()
     await kafka_connector.start()
-    app.state.kafka_service = kafka_connector
-    logger.info("Kafka service stored in app.state.")
     await kafka_connector.consume()
     logger.info("Kafka consumer is working")
+    app.state.kafka_service = kafka_connector
+    logger.info("Kafka service stored in app.state.")
 
     yield
 

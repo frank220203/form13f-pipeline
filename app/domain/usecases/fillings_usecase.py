@@ -1,9 +1,9 @@
 from typing import List, Optional
 
 from domain.usecases.dto.fillings_request_dto import FillingsRequestDto
-from domain.usecases.services.kafka_service import KafkaService
+from domain.usecases.services.api_caller import ApiCaller
 from domain.usecases.services.parser_service import PaserService
-from domain.usecases.services.edgar_api_service import EdgarApiService
+from domain.usecases.services.message_handler import MessageHandler
 
 # cik : sec에 등록된 기업 고유 식별번호
 # fillings : 제출물
@@ -12,14 +12,14 @@ from domain.usecases.services.edgar_api_service import EdgarApiService
 # issuer : 상장회사
 class FillingsUsecase:
 
+    __api_caller: ApiCaller
     __paser_service: PaserService
-    __kafka_service: KafkaService
-    __edgar_api_service: EdgarApiService
+    __message_handler: MessageHandler
     
-    def __init__(self, kafka_service: KafkaService, paser_service: PaserService, edgar_api_service: EdgarApiService):
-        self.__kafka_service = kafka_service
+    def __init__(self, api_caller: ApiCaller, paser_service: PaserService, message_handler: MessageHandler):
+        self.__api_caller = api_caller
         self.__paser_service = paser_service
-        self.__edgar_api_service = edgar_api_service
+        self.__message_handler = message_handler
 
     async def get_documents_urls(
             self,
@@ -44,7 +44,7 @@ class FillingsUsecase:
                 }, 
             endpoint=endpoint
             )
-        data = await self.__edgar_api_service.get_fillings_list(request_dto.url, request_dto.headers, request_dto.params)
+        data = await self.__api_caller.call(request_dto.url, request_dto.headers, request_dto.params)
         urls = self.__paser_service.find_documents_urls(data)
         return urls
         
@@ -54,7 +54,7 @@ class FillingsUsecase:
             endpoint: str
     ) -> dict:
         request_dto = FillingsRequestDto(headers={'User-Agent': email}, params={}, endpoint=endpoint)
-        data = await self.__edgar_api_service.get_fillings_list(request_dto.url, request_dto.headers, request_dto.params)
+        data = await self.__api_caller.call(request_dto.url, request_dto.headers, request_dto.params)
         portfolios = self.__paser_service.find_portfolios(data)
         return portfolios
     
@@ -65,7 +65,7 @@ class FillingsUsecase:
             endpoint: str
     ) -> List[dict]:
         request_dto = FillingsRequestDto(headers={'User-Agent': email}, params={}, endpoint=endpoint)
-        data = await self.__edgar_api_service.get_fillings_list(request_dto.url, request_dto.headers, request_dto.params)
+        data = await self.__api_caller.call(request_dto.url, request_dto.headers, request_dto.params)
         issuers = self.__paser_service.find_portfolio_issuers(data, meta)
-        await self.__kafka_service.publish("portfolio",issuers)
+        await self.__message_handler.publish("portfolio", issuers)
         return issuers
