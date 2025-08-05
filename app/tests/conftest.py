@@ -29,6 +29,12 @@ def mock_api_caller() -> MagicMock:
       mock_api_caller = MagicMock()
       return mock_api_caller
 
+# edgar_service Mock
+@pytest.fixture(scope="module")
+def mock_edgar_service() -> MagicMock:
+      mock_edgar_service = MagicMock()
+      return mock_edgar_service
+
 # paser_service Mock
 @pytest.fixture(scope="module")
 def mock_parser_service() -> MagicMock:
@@ -41,8 +47,8 @@ def mock_message_handler() -> AsyncMock:
       mock_message_handler = AsyncMock()
       return mock_message_handler
 
-# fillings_usecase Mock
+# filings_usecase Mock
 @pytest.fixture(scope="module")
-def mock_fillings_usecase() -> MagicMock:
-      mock_fillings_usecase = MagicMock()
-      return mock_fillings_usecase
+def mock_filings_usecase() -> MagicMock:
+      mock_filings_usecase = MagicMock()
+      return mock_filings_usecase

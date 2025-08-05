@@ -9,7 +9,7 @@ class PaserServiceImpl(PaserService):
         # tag : table, tr, td, a // attribute : class, href
         soup = BeautifulSoup(data, 'html.parser')
         table = soup.find('table', {'class': 'tableFile2'})
-        # print(table)
+        print(table)
         urls = []
 
         # 첫 번째 행은 헤더이므로 제외, tr내부 요소를 배열로 받음
@@ -22,7 +22,7 @@ class PaserServiceImpl(PaserService):
 
         return urls
     
-    def find_portfolios(self, data: str) -> dict:
+    def find_portfolio_urls(self, data: str) -> dict:
         # tag : table, tr, td, a // attribute : class, href
         soup = BeautifulSoup(data, 'html.parser')
         ## meta
@@ -56,22 +56,22 @@ class PaserServiceImpl(PaserService):
                     # print(link)
                     urls.append(link)
 
-        portfolios = {
+        portfolio_urls = {
             'meta': portfolio_meta,
             'urls': urls
             }
         
         # print(portfolios)
 
-        return portfolios
+        return portfolio_urls
     
-    def find_portfolio_issuers(self, data: str, meta: str) -> List[dict]:
+    def find_portfolio_issuers(self, data: str) -> List[dict]:
         # tag : table, tr, td, a // attribute : class, href
         soup = BeautifulSoup(data, 'html.parser')
         # 포트폴리오는 테이블에 class가 없고, 두 번째 테이블에 상장회사 정보가 담겨 있다.
         table = soup.find('table', {'summary': 'Form 13F-NT Header Information'})
         # print(table)
-        issuers = [meta]
+        issuers = []
 
         # 1~3 행은 헤더이므로 제외, tr내부 요소를 배열로 받음
         for row in table.find_all('tr')[3:]:

@@ -1,7 +1,7 @@
 import json
 import pytest
 from unittest.mock import MagicMock, AsyncMock
-from domain.usecases.fillings_usecase import FillingsUsecase
+from domain.usecases.filings_usecase import FilingsUsecase
 
 # get_documents_urls 단위 테스트
 @pytest.mark.anyio
@@ -16,12 +16,12 @@ async def test_get_documents_urls(
     mock_api_caller.call.return_value = "<html><body><table class='tableFile2'><tr><th>Description</th></tr><tr><td>13F-HR</td><td><a href='url1'> Documents</a></td></tr><tr><td>13F-HR</td><td><a href='url2'> Documents</a></td></tr></table></body></html>"
 
     # When & Mocking
-    fillings_usecase = FillingsUsecase(
+    filings_usecase = FilingsUsecase(
         mock_api_caller, 
         mock_parser_service, 
         mock_message_handler
         )
-    urls = await fillings_usecase.get_documents_urls(email="sample@email.com", endpoint="/cgi-bin/browse-edgar/getcompany", cik="0001067983", type="13F-HR")
+    urls = await filings_usecase.get_documents_urls(email="sample@email.com", endpoint="/cgi-bin/browse-edgar/getcompany", cik="0001067983", type="13F-HR")
 
     # Then
     assert urls == ['url1', 'url2']
@@ -39,12 +39,12 @@ async def test_get_portfolios(
     mock_api_caller.call.return_value = "<html><body><table class='tableFile'><tr><th>Description</th></tr><tr><td></td><td>13F-HR</td><td><a href='url1'> Documents</a></td></tr><tr><td></td><td>13F-HR</td><td><a href='url2'> Documents</a></td></tr></table></body></html>"
 
     # When & Mocking
-    fillings_usecase = FillingsUsecase(
+    filings_usecase = FilingsUsecase(
         mock_api_caller, 
         mock_parser_service, 
         mock_message_handler
         )
-    protfolios = await fillings_usecase.get_portfolios(email="sample@email.com", endpoint="/Archives/edgar/data/1067983/000095012324011775/0000950123-24-011775-index.htm")
+    protfolios = await filings_usecase.get_portfolios(email="sample@email.com", endpoint="/Archives/edgar/data/1067983/000095012324011775/0000950123-24-011775-index.htm")
 
     # Then
     assert protfolios == {'meta':'data', 'urls':['url1', 'url2']}
@@ -63,12 +63,12 @@ async def test_get_portfolio_issuers(
     mock_api_caller.call.return_value = "<html><body><table class='tableFile'><tr><th>Description</th></tr><tr><td></td><td>13F-HR</td><td><a href='url1'> Documents</a></td></tr><tr><td></td><td>13F-HR</td><td><a href='url2'> Documents</a></td></tr></table></body></html>"
 
     # When & Mocking
-    fillings_usecase = FillingsUsecase(
+    filings_usecase = FilingsUsecase(
         mock_api_caller, 
         mock_parser_service, 
         mock_message_handler
         )
-    urls = await fillings_usecase.get_portfolio_issuers(
+    urls = await filings_usecase.get_portfolio_issuers(
         meta=meta, 
         email="sample@email.com", 
         endpoint="/Archives/edgar/data/1067983/000095012324011775/xslForm13F_X02/36917.xml"
