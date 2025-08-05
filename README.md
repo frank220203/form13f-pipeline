@@ -13,6 +13,19 @@
     - Airflow : 1 CPU, 2.5 RAM, 디스크 20GB? -> spot vm으로 뺄까 생각 중 (비용적 측면은 local crontab이 최고)
     - MongoDB : 1 CPU, 1 RAM, 디스크 10GB?
 
+### 가상환경 세팅
+- 개인 PC에 설치되는 라이브러리 버전 충돌 관리하기 위해 각자 가상환경을 세팅
+- 모든 pip install은 각자의 가상환경에서 실행
+#### 가상환경 생성
+```bash
+python -m venv venv
+```
+#### 가상환경 실행
+```bash
+# cmd 터미널 기준
+.\venv\Scripts\activate
+```
+
 ### FastAPI 설치 방법
 ```bash
 # FastAPI 라이브러리 
@@ -51,4 +64,19 @@ pytest -k "test_get_portfolios_urls" ./tests/api/controllers/test_fillings_contr
 ### Kafka (kafka-python -> aiokafka 변경)
 ```bash
 pip install aiokafka
+```
+
+### MongoDB 드라이버
+```bash
+pip install motor
+```
+
+### ODM(JPA와 같은 ORM, 다만 MongoDB는 정형화된 스키마가 없기 때문에 Object-Document Mapper라고 부름)
+```bash
+pip install beanie
+```
+
+### EDGAR 설치 (2024년 11월 공식 출시)
+```bash
+pip install edgar
 ```
