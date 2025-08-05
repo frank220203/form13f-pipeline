@@ -1,15 +1,15 @@
 from fastapi import APIRouter
-from api.controllers.fillings_controller import FillingsController
+from api.controllers.filings_controller import FilingsController
 
 class ApiRoutes:
     
     __router: APIRouter
-    __fillingsController: FillingsController
+    __filingsController: FilingsController
     
     def __init__(self):
         self.__router = APIRouter()
-        self.__fillingsController = FillingsController()
-        self.__router.include_router(self.__fillingsController.get_router())
+        self.__filingsController = FilingsController()
+        self.__router.include_router(self.__filingsController.get_router())
     
     def get_router(self):
         return self.__router

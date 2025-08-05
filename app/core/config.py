@@ -12,9 +12,11 @@ class Settings(BaseSettings, ConfigManager):
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
     PROJECT_NAME: str
     USER_AGENT: str
+    SEC_URL: str
     KAFKA_BROKER_IP: str
     KAFKA_TOPIC: str
     KAFKA_GROUP_PF: str
+    MOBGO_DB_URL: str
 
     def get_api_version(self) -> str:
         return self.API_VERSION
@@ -28,6 +30,9 @@ class Settings(BaseSettings, ConfigManager):
     def get_user_agent(self) -> str:
         return self.USER_AGENT
     
+    def get_sec_url(self) -> str:
+        return self.SEC_URL
+    
     def get_kafka_broker_ip(self) -> str:
         return self.KAFKA_BROKER_IP
     
@@ -36,3 +41,6 @@ class Settings(BaseSettings, ConfigManager):
     
     def get_kafka_group_pf(self) -> str:
         return self.KAFKA_GROUP_PF
+    
+    def get_mongo_db_url(self) -> str:
+        return self.MOBGO_DB_URL

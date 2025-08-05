@@ -24,7 +24,7 @@ async def lifespan(app: FastAPI):
     # Kafka 실행
     kafka_connector = di_manager.get_kafka_connection()
     await kafka_connector.start()
-    await kafka_connector.consume()
+    # await kafka_connector.read()
     logger.info("Kafka consumer is working")
     app.state.kafka_service = kafka_connector
     logger.info("Kafka service stored in app.state.")
