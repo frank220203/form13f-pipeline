@@ -12,24 +12,169 @@ api_version = config_manager.get_api_version()
 # get_all_tickers 단위 테스트
 @pytest.mark.anyio
 async def test_get_all_tickers(
+        # async_client: AsyncClient,
         client: TestClient,
         mock_filings_usecase: MagicMock
 ) -> None:
     #Mock
     mock_filings_usecase.get_all_tickers = AsyncMock()
-    mock_filings_usecase.get_all_tickers.return_value = {"fields":["cik","name","ticker","exchange"],"data":[[1045810,"NVIDIA CORP","NVDA","Nasdaq"]]}
+    mock_filings_usecase.get_all_tickers.return_value = {
+        'fields':[
+            "cik",
+            "name",
+            "ticker",
+            "exchange"
+        ],
+        'data':[[
+            "1045810",
+            "NVIDIA CORP",
+            "NVDA",
+            "Nasdaq"
+            ]]
+    }
     
     # Mocking // 의존성 주입을 안 할 경우 실제 API를 타게 됨 (통합테스트 가능)
     app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
 
     # When
     # TestClient 자체는 동기적으로 작동하기 때문에 await 쓰지 않음
-    response = client.get(f"{api_version}/filings/tickers?endpoint=/files/company_tickers_exchange.json&email=test@email.com")
+    # response = await client.get(f"{api_version}/filings/tickers?email=test@email.com")
+    response = client.get(f"{api_version}/filings/tickers?email=test@email.com")
 
     # Then
     assert response.status_code == 200
-    assert response.json() == {"tickers":{"fields":["cik","name","ticker","exchange"],"data":[[1045810,"NVIDIA CORP","NVDA","Nasdaq"]]}}
+    assert response.json() == {'tickers':{
+        'fields':[
+            "cik",
+            "name",
+            "ticker",
+            "exchange"
+        ],
+        'data':[[
+            "1045810",
+            "NVIDIA CORP",
+            "NVDA",
+            "Nasdaq"
+            ]]
+    }}
+
+@pytest.mark.anyio
+async def test_get_all_submissions(
+    client: TestClient,
+    mock_filings_usecase: MagicMock
+) -> None:
+    # Mock
+    mock_filings_usecase.get_all_submissions = AsyncMock()
+    mock_filings_usecase.get_all_submissions.return_value = {
+        'cik':"0001067983", 
+        'entityType':"operating",
+        'sic':"6331",
+        'sicDescription':"Fire, Marine",
+        'ownerOrg':"02 Finance",
+        'insiderTransactionForOwnerExists':1,
+        'insiderTransactionForIssuerExists':1,
+        'name':"BERKSHIRE HATHAWAY INC",
+        'tickers':["BRK-B", "BRK-A"],
+        'exchanges':["NYSE", "NYSE"],
+        'ein':None,
+        'lei':None,
+        'description':"",
+        'website':"",
+        'investorWebsite':"",
+        'category':"Large accelerated",
+        'fiscalYearEnd':"1231",
+        'stateOfIncorporation':"DE",
+        'stateOfIncorporationDescription':"DE",
+        'addresses':{'mailing':{
+                'street1':"3555 FARNAM",
+                'street2':None,
+                'city':"OMAHA"
+            }},
+        'phone':"4023461400",
+        'flags':"",
+        'formerNames':[{
+            'name':"NBH INC",
+            'from':"1998-08-10",
+            'to':"1999-01-05"
+            }],
+        'filings':{'recent':{
+            'accessionNumber':[
+                "0000950123-25-00570", 
+                "0000950170-25-102306", 
+                "0000950170-25-102303"
+                ],
+            'filingDate':[
+                "2025-08-04",
+                "2025-08-04",
+                "2025-08-04"
+                ],
+            'reportDate':[
+                "2025-07-31",
+                "2025-07-31",
+                "2025-07-31"
+                ]
+            }}
+        }
+
+    # Mocking
+    app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
+
+    # When
+    response = client.get(f"{api_version}/filings/submissions?cik=0001067983&email=test@email.com&filing_type=13F-HR&filing_type=13F-HR/A")
     
+    # Then 
+    assert response.status_code == 200
+    assert response.json() == {'submissions': {
+        'cik':"0001067983", 
+        'entityType':"operating",
+        'sic':"6331",
+        'sicDescription':"Fire, Marine",
+        'ownerOrg':"02 Finance",
+        'insiderTransactionForOwnerExists':1,
+        'insiderTransactionForIssuerExists':1,
+        'name':"BERKSHIRE HATHAWAY INC",
+        'tickers':["BRK-B", "BRK-A"],
+        'exchanges':["NYSE", "NYSE"],
+        'ein':None,
+        'lei':None,
+        'description':"",
+        'website':"",
+        'investorWebsite':"",
+        'category':"Large accelerated",
+        'fiscalYearEnd':"1231",
+        'stateOfIncorporation':"DE",
+        'stateOfIncorporationDescription':"DE",
+        'addresses':{'mailing':{
+                'street1':"3555 FARNAM",
+                'street2':None,
+                'city':"OMAHA"
+            }},
+        'phone':"4023461400",
+        'flags':"",
+        'formerNames':[{
+            'name':"NBH INC",
+            'from':"1998-08-10",
+            'to':"1999-01-05"
+            }],
+        'filings':{'recent':{
+            'accessionNumber':[
+                "0000950123-25-00570", 
+                "0000950170-25-102306", 
+                "0000950170-25-102303"
+                ],
+            'filingDate':[
+                "2025-08-04",
+                "2025-08-04",
+                "2025-08-04"
+                ],
+            'reportDate':[
+                "2025-07-31",
+                "2025-07-31",
+                "2025-07-31"
+                ]
+            }}
+        }}
+
 # get_documents_urls 단위 테스트
 @pytest.mark.anyio
 async def test_get_documents_urls(
