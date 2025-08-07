@@ -75,8 +75,3 @@ pip install motor
 ```bash
 pip install beanie
 ```
-
-### EDGAR 설치 (2024년 11월 공식 출시)
-```bash
-pip install edgar
-```
