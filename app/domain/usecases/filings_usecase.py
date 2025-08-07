@@ -2,6 +2,7 @@ from typing import List
 
 from domain.models.issuer import Issuer
 from domain.models.portfolio import Portfolio
+from domain.models.submission import Submission
 
 from domain.usecases.services.api_caller import ApiCaller
 from domain.usecases.services.edgar_service import EdgarService
@@ -20,16 +21,39 @@ class FilingsUsecase:
     __paser_service: PaserService
     __message_handler: MessageHandler
     
-    def __init__(self, api_caller: ApiCaller, edgar_service: EdgarService, paser_service: PaserService, message_handler: MessageHandler):
+    def __init__(
+            self, 
+            api_caller: ApiCaller, 
+            edgar_service: EdgarService, 
+            paser_service: PaserService, 
+            message_handler: MessageHandler
+    ):
         self.__api_caller = api_caller
         self.__edgar_service = edgar_service
         self.__paser_service = paser_service
         self.__message_handler = message_handler
     
     
-    async def get_all_tickers(self, endpoint:str, headers: dict) -> dict:
-        url = self.__edgar_service.get_edgar_url() + endpoint
-        return await self.__api_caller.call(url=url, headers=headers)
+    async def get_all_tickers(self, headers: dict) -> dict:
+        url = self.__edgar_service.get_edgar_tickers_url()
+        tickers = await self.__api_caller.call(url=url, headers=headers)
+        await self.__message_handler.publish('ticker', tickers)
+        return tickers
+    
+    async def get_all_submissions(
+            self,
+            cik: str,
+            headers: dict,
+            filing_type: List[str] = None,
+    ) -> dict:
+        url = self.__edgar_service.get_all_submissions_url(cik)
+        response = await self.__api_caller.call(url=url, headers=headers)
+        submissions = Submission(**response)
+        if filing_type:
+            submissions = self.__edgar_service.find_submissions(submissions, filing_type)
+        submissions = submissions.model_dump()
+        await self.__message_handler.publish('submission', submissions)
+        return submissions
 
     async def get_documents_urls(
             self,
@@ -62,5 +86,5 @@ class FilingsUsecase:
         for issuer in issuers_dict:
             issuers.append(Issuer.model_validate(issuer))
         portfolio = Portfolio(cik=meta['cik'], filing_accepted=meta['Accepted'], report_period=meta['Period of Report'], create_at=meta['Effectiveness Date'], issuers=issuers)
-        await self.__message_handler.publish("portfolio", portfolio)
+        await self.__message_handler.publish('portfolio', portfolio)
         return portfolio

@@ -1,10 +1,14 @@
 from abc import ABC, abstractmethod
 from typing import List
+from domain.models.submission import Submission
 
 class EdgarService(ABC):
     @abstractmethod
-    def get_edgar_url(self) -> dict:
+    def get_edgar_tickers_url(self) -> dict:
         pass
     @abstractmethod
-    async def get_all_filings(self, cik: str, filing_type: str) -> List:
+    async def get_all_submissions_url(self, cik: str, filing_type: str) -> List:
+        pass
+    @abstractmethod
+    def find_submissions(self, submissions: Submission, filings_type: List[str]) -> Submission:
         pass
