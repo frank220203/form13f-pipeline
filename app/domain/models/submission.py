@@ -12,7 +12,9 @@ class Submission(BaseModel):
     name: str
     tickers: List[str]
     exchanges: List[str]
+    # 타입 확인이 안됨, 일단 테이블은 string으로
     ein: None
+    # 타입 확인이 안됨, 일단 테이블은 string으로
     lei: None
     description: str
     website: str
