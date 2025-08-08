@@ -45,62 +45,19 @@ class FilingsController:
         
         return JSONResponse(content={"submissions": submissions}, status_code=status.HTTP_200_OK)
     
-    @filings_router.get("/documents")
-    async def get_documents_urls(
+    @filings_router.get("/portfolio")
+    async def get_portfolio(
         self,
         cik: str = Query(..., description="10자리의 중앙 인덱스 키, ex) 0001067983"),
         email: str = Query(..., description="SEC EDGAR의 정책으로 User-Agent로 회사 메일 요구"),
-        endpoint: str = Query(..., description="ex) /cgi-bin/browse-edgar/getcompany"),
-        type: Optional[str] = Query(None, description="문서유형, ex) 13F-HR"),
-        owner: Optional[str] = Query(None, description="소유자"),
-        dateb: Optional[str] = Query(None, description="end date"),
-        count: Optional[int] = Query(None, description="개수, default) 10"),
-        search_text: Optional[str] = Query(None, description="특정 단어 검색"),
-        filings_usecase: FilingsUsecase = Depends(get_filings_usecase)
-    ) -> JSONResponse:
-        """
-        Documents URLs 반환.
-        """
-        request_dto = FilingsRequestDto(
-            email=email,
-            endpoint=endpoint,
-            params={
-                'cik': cik,
-                'type': type,
-                'owner': owner,
-                'dateb': dateb,
-                'count': count,
-                'search_text': search_text
-            }
-        )
-        urls = await filings_usecase.get_documents_urls(request_dto.endpoint, request_dto.headers, request_dto.params)
-
-        return JSONResponse(content={"urls": urls}, status_code=status.HTTP_200_OK)
-    
-    @filings_router.get("/portfolios/urls")
-    async def get_portfolio_urls(
-        self,
-        email: str = Query(..., description="SEC EDGAR의 정책으로 User-Agent로 회사 메일 요구"),
-        endpoint: str = Query(..., description="ex) /Archives/edgar/data/1067983/000095012324011775/0000950123-24-011775-index.htm"),
-        filings_usecase: FilingsUsecase = Depends(get_filings_usecase)
-    ) -> JSONResponse:
-        """
-        Portfolios URLs 반환.
-        """
-        porfolio_urls = await filings_usecase.get_portfolio_urls(request_dto.endpoint, request_dto.headers)
-
-        return JSONResponse(content={"porfolio_urls": porfolio_urls}, status_code=status.HTTP_200_OK)
-    
-    @filings_router.get("/portfolios/issuers")
-    async def get_portfolio(
-        self,
-        request_dto: FilingsRequestDto,
+        accession_number: str = Query(..., description="접근번호, ex) 0000950123-25-005701"),
         filings_usecase: FilingsUsecase = Depends(get_filings_usecase)
     ) -> JSONResponse:
         """
         Portfolio Isseurs 반환.
         """
-        portfolio = await filings_usecase.get_portfolio(request_dto.endpoint, request_dto.headers, request_dto.meta)
+        request_dto = FilingsRequestDto(email=email, params={'cik': cik, 'accession_number': accession_number})
+        portfolio = await filings_usecase.get_portfolio(cik=request_dto.params["cik"], headers=request_dto.headers, accession_number=request_dto.params["accession_number"])
 
         return JSONResponse(content={"porfolio": portfolio}, status_code=status.HTTP_200_OK)
     
