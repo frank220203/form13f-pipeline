@@ -13,6 +13,9 @@ class Settings(BaseSettings, ConfigManager):
     PROJECT_NAME: str
     USER_AGENT: str
     SEC_URL: str
+    DATA_URL: str
+    META_URL: str
+    ISSUERS_URL: str
     TICKERS_URL: str
     SUBMISSIONS_URL: str
     KAFKA_BROKER_IP: str
@@ -34,6 +37,15 @@ class Settings(BaseSettings, ConfigManager):
     
     def get_sec_url(self) -> str:
         return self.SEC_URL
+    
+    def get_data_url(self) -> str:
+        return self.DATA_URL
+    
+    def get_meta_url(self) -> str:
+        return self.META_URL
+    
+    def get_issuers_url(self) -> str:
+        return self.ISSUERS_URL
     
     def get_tickers_url(self) -> str:
         return self.TICKERS_URL
