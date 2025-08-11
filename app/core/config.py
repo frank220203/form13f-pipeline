@@ -22,6 +22,7 @@ class Settings(BaseSettings, ConfigManager):
     KAFKA_TOPIC: str
     KAFKA_GROUP_PF: str
     MOBGO_DB_URL: str
+    DOCUMENT_MODELS: str
 
     def get_api_version(self) -> str:
         return self.API_VERSION
@@ -73,3 +74,6 @@ class Settings(BaseSettings, ConfigManager):
     
     def get_mongo_db_url(self) -> str:
         return self.MOBGO_DB_URL
+    
+    def get_document_models(self) -> str:
+        return self.DOCUMENT_MODELS

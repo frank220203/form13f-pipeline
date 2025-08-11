@@ -28,6 +28,10 @@ async def lifespan(app: FastAPI):
     logger.info("Kafka consumer is working")
     app.state.kafka_service = kafka_connector
     logger.info("Kafka service stored in app.state.")
+    # MongoDB 실행
+    db_connector = di_manager.get_db_manager()
+    await db_connector.init_db()
+    logger.info("MongoDB is connected")
 
     yield
 

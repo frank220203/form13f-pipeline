@@ -2,11 +2,13 @@ from fastapi import Depends, Request
 
 from core.logger import Logger
 from core.config import Settings
+from core.repositories.beanie_repository import BeanieRepository
 from core.external_interfaces.httpx_client import HttpxClient
 from core.external_interfaces.edgar_service_impl import EdgarServiceImpl
 from core.external_interfaces.kafka_service_impl import KafkaServiceImpl
 from core.external_interfaces.parser_service_impl import PaserServiceImpl
 
+from domain.db_manager import DbManager
 from domain.logger_manager import LoggerManager
 from domain.config_manager import ConfigManager
 from domain.usecases.filings_usecase import FilingsUsecase
@@ -25,6 +27,10 @@ def get_logger_manager() -> LoggerManager:
 ## Config
 def get_config_manager() -> ConfigManager:
     return Settings()
+
+## DB Session
+def get_db_manager() -> DbManager:
+    return BeanieRepository(get_config_manager())
 
 ## Services
 def get_api_caller() -> ApiCaller:
