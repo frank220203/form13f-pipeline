@@ -32,6 +32,9 @@ class EdgarServiceImpl(EdgarService):
         accession_number = accession_number.replace("-", '')
         return f"{self.__data_url}/{cik}/{accession_number}{self.__meta_url}", f"{self.__data_url}/{cik}/{accession_number}{self.__issuers_url}"
     
+    def get_all_submissions_url(self, cik: str) -> str:
+        return f"{self.__submissions_url}{cik}.json"
+    
     def find_submissions(self, submissions: Submission, filing_type: List[str]) -> Submission:
         recent = submissions.filings['recent']
         filtered_filings = {'recent':[{}]}
