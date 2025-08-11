@@ -37,6 +37,15 @@ class Settings(BaseSettings, ConfigManager):
     
     def get_sec_url(self) -> str:
         return self.SEC_URL
+
+    def get_data_url(self) -> str:
+        return self.DATA_URL
+    
+    def get_meta_url(self) -> str:
+        return self.META_URL
+    
+    def get_issuers_url(self) -> str:
+        return self.ISSUERS_URL
     
     def get_data_url(self) -> str:
         return self.DATA_URL

@@ -108,7 +108,6 @@ async def test_get_all_submissions(
     mock_api_caller.call.return_value = json.dumps(mock_response)
     mock_submissions = Submission(**json.loads(mock_api_caller.call.return_value))
     mock_edgar_service.find_submissions.return_value = mock_submissions
-    
     # When & Mocking
     filings_usecase = FilingsUsecase(
         mock_api_caller,
