@@ -1,7 +1,13 @@
+from domain.usecases.repositories.ticker_repository import TickerRepository
+
 class PipelineUsecase:
 
-    def __init__(self):
-        pass
+    __ticker_repository: TickerRepository
 
-    def load_data(self, data: str) -> None:
+    def __init__(self, ticker_repository: TickerRepository):
+        self.__ticker_repository = ticker_repository
+
+    async def load_tickers(self, data: str) -> dict:
         print(f"load data : {data}")
+        tickers = await self.__ticker_repository.add_data(data)
+        return tickers

@@ -1,7 +1,7 @@
 # conftest.py
 import pytest
 from httpx import ASGITransport, AsyncClient
-from unittest.mock import MagicMock, AsyncMock
+from unittest.mock import MagicMock
 from collections.abc import AsyncGenerator, Generator
 from fastapi.testclient import TestClient
 from main import app
@@ -43,9 +43,15 @@ def mock_parser_service() -> MagicMock:
 
 # massege_handler Mock
 @pytest.fixture(scope="module")
-def mock_message_handler() -> AsyncMock:
-      mock_message_handler = AsyncMock()
+def mock_message_handler() -> MagicMock:
+      mock_message_handler = MagicMock()
       return mock_message_handler
+
+# ticker_repository Mock
+@pytest.fixture(scope="module")
+def mock_ticker_repository() -> MagicMock:
+      mock_ticker_repository = MagicMock()
+      return mock_ticker_repository
 
 # filings_usecase Mock
 @pytest.fixture(scope="module")
