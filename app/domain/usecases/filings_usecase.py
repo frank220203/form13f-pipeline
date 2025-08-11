@@ -1,8 +1,6 @@
 import json
 from typing import List
 
-from domain.models.issuer import Issuer
-from domain.models.portfolio import Portfolio
 from domain.models.submission import Submission
 
 from domain.usecases.services.api_caller import ApiCaller
@@ -49,10 +47,10 @@ class FilingsUsecase:
     ) -> dict:
         url = self.__edgar_service.get_submissions_url(cik)
         response = await self.__api_caller.call(url=url, headers=headers)
-        submissions = Submission(**json.loads(response))
+        submissions = response
         if filing_type:
-            submissions = self.__edgar_service.find_submissions(submissions, filing_type)
-        submissions = submissions.model_dump()
+            filtered_submissions = self.__edgar_service.find_submissions(Submission(**json.loads(response)), filing_type)
+            submissions = filtered_submissions.model_dump()
         await self.__message_handler.publish('submission', submissions)
         return submissions
     

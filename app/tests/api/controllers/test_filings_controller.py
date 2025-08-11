@@ -1,9 +1,10 @@
-import json
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import MagicMock, AsyncMock
+
 from api.deps import di_manager
 from api.deps.di_manager import get_filings_usecase
+
 from main import app
 
 config_manager = di_manager.get_config_manager()
@@ -43,20 +44,7 @@ async def test_get_all_tickers(
 
     # Then
     assert response.status_code == 200
-    assert response.json() == {'tickers':{
-        'fields':[
-            "cik",
-            "name",
-            "ticker",
-            "exchange"
-        ],
-        'data':[[
-            "1045810",
-            "NVIDIA CORP",
-            "NVDA",
-            "Nasdaq"
-            ]]
-    }}
+    assert response.json() == {'tickers':mock_filings_usecase.get_all_tickers.return_value}
 
 @pytest.mark.anyio
 async def test_get_all_submissions(
@@ -124,56 +112,7 @@ async def test_get_all_submissions(
     
     # Then 
     assert response.status_code == 200
-    assert response.json() == {'submissions': {
-        'cik':"0001067983", 
-        'entityType':"operating",
-        'sic':"6331",
-        'sicDescription':"Fire, Marine",
-        'ownerOrg':"02 Finance",
-        'insiderTransactionForOwnerExists':1,
-        'insiderTransactionForIssuerExists':1,
-        'name':"BERKSHIRE HATHAWAY INC",
-        'tickers':["BRK-B", "BRK-A"],
-        'exchanges':["NYSE", "NYSE"],
-        'ein':None,
-        'lei':None,
-        'description':"",
-        'website':"",
-        'investorWebsite':"",
-        'category':"Large accelerated",
-        'fiscalYearEnd':"1231",
-        'stateOfIncorporation':"DE",
-        'stateOfIncorporationDescription':"DE",
-        'addresses':{'mailing':{
-                'street1':"3555 FARNAM",
-                'street2':None,
-                'city':"OMAHA"
-            }},
-        'phone':"4023461400",
-        'flags':"",
-        'formerNames':[{
-            'name':"NBH INC",
-            'from':"1998-08-10",
-            'to':"1999-01-05"
-            }],
-        'filings':{'recent':{
-            'accessionNumber':[
-                "0000950123-25-00570", 
-                "0000950170-25-102306", 
-                "0000950170-25-102303"
-                ],
-            'filingDate':[
-                "2025-08-04",
-                "2025-08-04",
-                "2025-08-04"
-                ],
-            'reportDate':[
-                "2025-07-31",
-                "2025-07-31",
-                "2025-07-31"
-                ]
-            }}
-        }}
+    assert response.json() == {'submissions': mock_filings_usecase.get_all_submissions.return_value}
 
 # get_portfolio 단위 테스트
 @pytest.mark.anyio
@@ -183,7 +122,65 @@ async def test_get_portfolio(
 ) -> None:
     # Mock
     mock_filings_usecase.get_portfolio = AsyncMock()
-    mock_filings_usecase.get_portfolio.return_value = ["stock1", "stock2"]
+    mock_filings_usecase.get_portfolio.return_value = {
+        "headerData": {
+            "submissionType": "13F-HR", 
+            "filerInfo": {
+                "liveTestFlag": "LIVE", 
+                "flags": {
+                    "confirmingCopyFlag": "false", 
+                    "returnCopyFlag": "true", 
+                    "overrideInternetFlag": "false"
+                }, 
+                "filer": {"credentials": {
+                        "cik": "0001067983", 
+                        "ccc": "XXXXXXXX"
+                    }}, 
+                "periodOfReport": "03-31-2025"
+            }
+        },
+        "formData": {
+            "filingManager": {
+                "name": "Berkshire Hathaway Inc", 
+                "address": {
+                    "ns1:street1": "3555 Farnam Street", 
+                    "ns1:city": "Omaha", 
+                    "ns1:stateOrCountry": "NE", 
+                    "ns1:zipCode": "68131"
+                }
+            },
+            "summaryPage": {
+                "otherIncludedManagersCount": "14", 
+                "tableEntryTotal": "110", 
+                "tableValueTotal": "258701144516", 
+                "isConfidentialOmitted": "true", 
+                "otherManagers2Info": {"otherManager2": [{
+                    "sequenceNumber": "1", 
+                    "otherManager": {
+                        "form13FFileNumber": "28-2226", 
+                        "name": "Berkshire Hathaway Homestate Insurance Co."
+                    }
+                }]}
+            },
+        },
+        "infoTable": [{
+            "nameOfIssuer": "ALLY FINL INC", 
+            "titleOfClass": "COM", 
+            "cusip": "02005N100", 
+            "value": "463886547", 
+            "shrsOrPrnAmt": {
+                "sshPrnamt": "12719675", 
+                "sshPrnamtType": "SH"
+            }, 
+            "investmentDiscretion": "DFND", 
+            "otherManager": "4", 
+            "votingAuthority": {
+                "Sole": "12719675", 
+                "Shared": "0", 
+                "None": "0"
+            }
+        }]
+    }
 
     # Mocking
     # app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
@@ -193,4 +190,4 @@ async def test_get_portfolio(
 
     # Then
     assert response.status_code == 200
-    assert response.json() == {"porfolio_issuers": ["stock1", "stock2"]}
+    assert response.json() == {"porfolio": mock_filings_usecase.get_portfolio.return_value}
