@@ -9,7 +9,7 @@ class HttpxClient(ApiCaller):
             url: str,
             headers: dict,
             params: Optional[dict] = None
-            ) -> dict:
+    ) -> str:
         async with httpx.AsyncClient() as client:
             data = await client.get(url, headers=headers, params=params)
-        return data.json()
+        return data.text

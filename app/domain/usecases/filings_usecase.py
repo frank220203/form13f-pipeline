@@ -1,7 +1,6 @@
+import json
 from typing import List
 
-from domain.models.issuer import Issuer
-from domain.models.portfolio import Portfolio
 from domain.models.submission import Submission
 
 from domain.usecases.services.api_caller import ApiCaller
@@ -46,45 +45,24 @@ class FilingsUsecase:
             headers: dict,
             filing_type: List[str] = None,
     ) -> dict:
-        url = self.__edgar_service.get_all_submissions_url(cik)
+        url = self.__edgar_service.get_submissions_url(cik)
         response = await self.__api_caller.call(url=url, headers=headers)
-        submissions = Submission(**response)
+        submissions = response
         if filing_type:
-            submissions = self.__edgar_service.find_submissions(submissions, filing_type)
-        submissions = submissions.model_dump()
+            filtered_submissions = self.__edgar_service.find_submissions(Submission(**json.loads(response)), filing_type)
+            submissions = filtered_submissions.model_dump()
         await self.__message_handler.publish('submission', submissions)
         return submissions
-
-    async def get_documents_urls(
-            self,
-            endpoint: str, 
-            headers: dict,
-            params: dict
-    ) -> List[str]:
-        data = await self.__edgar_service.call(endpoint, headers, params)
-        urls = self.__paser_service.find_documents_urls(data)
-        return urls
-        
-    async def get_portfolio_urls(
-            self,
-            endpoint: str,
-            headers: dict
-    ) -> dict:
-        data = await self.__edgar_service.call(endpoint, headers)
-        portfolio_urls = self.__paser_service.find_portfolio_urls(data)
-        return portfolio_urls
     
     async def get_portfolio(
             self,
-            endpoint: str,
+            cik: str,
             headers: dict,
-            meta: dict
-    ) -> Portfolio:
-        data = await self.__edgar_service.call(endpoint, headers)
-        issuers_dict = self.__paser_service.find_portfolio_issuers(data)
-        issuers = []
-        for issuer in issuers_dict:
-            issuers.append(Issuer.model_validate(issuer))
-        portfolio = Portfolio(cik=meta['cik'], filing_accepted=meta['Accepted'], report_period=meta['Period of Report'], create_at=meta['Effectiveness Date'], issuers=issuers)
+            accession_number: str
+    ) -> dict:
+        portfolio = {}
+        for url in self.__edgar_service.get_portfolio_url(cik, accession_number):
+            response = await self.__api_caller.call(url=url, headers=headers)
+            portfolio.update(self.__paser_service.xml_to_dict(response))
         await self.__message_handler.publish('portfolio', portfolio)
         return portfolio
