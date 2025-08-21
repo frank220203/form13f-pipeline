@@ -40,7 +40,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
             self.logger.info(f"[Request - {request.method}][{request.url}][{request.client.host}:{request.client.port}]")
 
         response = Response("Internal Server Error", status_code=500)
-        response_body = None
+        response_body = ""
         response_body_bytes = b""
         ori_response = None
 
@@ -75,8 +75,8 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         finally:
             process_time = time.time() - start_time
             log_msg = f"[Response - {response.status_code}][{request.client.host}:{request.client.port}] --- Response Body : {response_body} --- {process_time:.4f}s"
-            # 포트폴리오 반환값이 긴 경우 임시로 빈 값 줌
-            # log_msg = ""
+            if len(response_body) > 100:
+                log_msg = f"[Response - {response.status_code}][{request.client.host}:{request.client.port}] --- Response Body : {response_body[:200]} --- {process_time:.4f}s"
 
             if response.status_code >= 500:
                 self.logger.error(log_msg)

@@ -32,9 +32,6 @@ class EdgarServiceImpl(EdgarService):
         accession_number = accession_number.replace("-", '')
         return f"{self.__data_url}/{cik}/{accession_number}{self.__meta_url}", f"{self.__data_url}/{cik}/{accession_number}{self.__issuers_url}"
     
-    def get_all_submissions_url(self, cik: str) -> str:
-        return f"{self.__submissions_url}{cik}.json"
-    
     def get_portfolio_url(self, cik: str, accession_number: str) -> tuple[str, str]:
         cik = cik[3:]
         accession_number = accession_number.replace("-", '')
