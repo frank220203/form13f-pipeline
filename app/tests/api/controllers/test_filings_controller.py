@@ -35,7 +35,7 @@ async def test_get_all_tickers(
     }
     
     # Mocking // 의존성 주입을 안 할 경우 실제 API를 타게 됨 (통합테스트 가능)
-    # app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
+    app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
 
     # When
     # TestClient 자체는 동기적으로 작동하기 때문에 await 쓰지 않음
@@ -105,7 +105,7 @@ async def test_get_all_submissions(
         }
 
     # Mocking
-    app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
+    # app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
 
     # When
     response = client.get(f"{api_version}/filings/submissions?cik=0001067983&email=test@email.com&filing_type=13F-HR&filing_type=13F-HR/A")

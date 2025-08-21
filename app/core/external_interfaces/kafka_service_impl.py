@@ -40,15 +40,17 @@ class KafkaServiceImpl(MessageHandler):
         await self.__producer.send(topic, json.dumps(msg).encode('utf-8'))
 
     async def read(self) -> str:
-        log_msg = ""
         # index를 맨 앞으로 변경
         await self.__consumer.seek_to_beginning()
         async for msg in self.__consumer:
             msg_to_str = msg.value.decode("utf-8")
             if msg.topic == 'ticker':
-                log_msg = await self.__pipeline_usecase.load_tickers(msg_to_str)
+                result = await self.__pipeline_usecase.load_tickers(msg_to_str)
+            elif msg.topic == 'submission':
+                result = await self.__pipeline_usecase.load_submissions(msg_to_str)
             # 단건 테스트용 break
             break
+        log_msg = str(result)
         if len(log_msg) > 100:
             self.__logger.info(f"Kafka consumed message : {log_msg[:100]}")
         else:
