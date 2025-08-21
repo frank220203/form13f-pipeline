@@ -1,0 +1,18 @@
+import pytest
+from unittest.mock import MagicMock, AsyncMock
+from domain.usecases.pipeline_usecase import PipelineUsecase
+
+# get_all_tickers 단위 테스트
+@pytest.mark.anyio
+async def test_load_tickers(mock_ticker_repository: MagicMock) -> None:
+    # Given & Mock
+    mock_ticker_repository.add_data = AsyncMock()
+    mock_ticker_repository.add_data.return_value = 1
+
+    # When & Mocking
+    pipeline_usecase = PipelineUsecase(mock_ticker_repository)
+
+    load_success = await pipeline_usecase.load_tickers(data="")
+
+    # Then
+    assert load_success == mock_ticker_repository.add_data.return_value

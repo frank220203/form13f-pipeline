@@ -1,6 +1,8 @@
-from typing import List
+from typing import Optional
 from pydantic import BaseModel
 
 class Ticker(BaseModel):
-    fields: List[str]
-    data: List[List[str]]
+    cik: int
+    name: str
+    ticker: str
+    exchange: Optional[str] = None

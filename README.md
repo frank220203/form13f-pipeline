@@ -51,8 +51,9 @@ uvicorn main:app --port 8001 --reload
 ```bash
 # pytest 설치
 pip install pytest
-# 비동기 요청 테스트 라이브러리
 pip install trio
+# 비동기 요청 테스트 라이브러리
+pip install pytest-asyncio
 # pytest 비동기 타임아웃 기능 라이브러리
 pip install pytest-timeout
 # test.py 만들고, 테스트 실행

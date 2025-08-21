@@ -14,5 +14,5 @@ class MessageHandler(ABC):
         pass
 
     @abstractmethod
-    async def read(self) -> None:
+    async def read(self) -> str:
         pass
