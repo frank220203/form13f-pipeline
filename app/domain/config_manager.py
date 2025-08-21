@@ -28,3 +28,7 @@ class ConfigManager(ABC):
     @abstractmethod
     def get_kafka_group_pf(self) -> str:
         pass
+
+    @abstractmethod
+    def get_mongo_db_url(self) -> str:
+        pass

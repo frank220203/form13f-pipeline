@@ -1,10 +1,11 @@
 # conftest.py
 import pytest
+import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from unittest.mock import MagicMock
 from collections.abc import AsyncGenerator, Generator
 from fastapi.testclient import TestClient
-from main import app
+from main import app, lifespan
 
 # 비동기 함수 테스트용 client (HTTP 요청 받은 것으로 간주)
 # 그런데 최신 버전 FastAPI에서는 lifespan 설정을 권장하는데, AsyncClient를 사용할 경우 lifespan이 트리거 되지 않음
@@ -12,7 +13,7 @@ from main import app
 async def async_client() -> AsyncGenerator[AsyncClient, None, None]:
     async with AsyncClient(
           transport=ASGITransport(app=app),
-          base_url="http://localhost:8002",
+          base_url="url",
         ) as ac:
             yield ac
 
@@ -22,6 +23,13 @@ async def async_client() -> AsyncGenerator[AsyncClient, None, None]:
 def client() -> Generator[TestClient, None, None]:
       with TestClient(app=app) as c:
             yield c
+
+# 엔드포인트 호출 없이 비동기 함수 테스트하기 위해 pytest_asyncio 사용
+# 직접 lifespan을 실행해서 app(혹은 app의 요소)을 넘겨줘야함.
+@pytest_asyncio.fixture(scope="function")
+async def kafka_service():
+      async with lifespan(app) as ls:
+            yield app.state.kafka_service
 
 # api_caller Mock
 @pytest.fixture(scope="module")
