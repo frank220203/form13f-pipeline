@@ -61,6 +61,12 @@ def mock_ticker_repository() -> MagicMock:
       mock_ticker_repository = MagicMock()
       return mock_ticker_repository
 
+# ticker_repository Mock
+@pytest.fixture(scope="module")
+def mock_submission_repository() -> MagicMock:
+      mock_submission_repository = MagicMock()
+      return mock_submission_repository
+
 # filings_usecase Mock
 @pytest.fixture(scope="module")
 def mock_filings_usecase() -> MagicMock:
