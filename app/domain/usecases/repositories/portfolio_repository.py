@@ -4,10 +4,6 @@ from domain.models.portfolio import Portfolio
 
 class PortfolioRepository(ABC):
     @abstractmethod
-    async def init_db(self, url: str) -> None:
-        pass
-
-    @abstractmethod
     async def add_data(self, portfolio: Portfolio) -> Portfolio:
         pass
 

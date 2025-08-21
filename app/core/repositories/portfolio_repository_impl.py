@@ -1,15 +1,10 @@
-from motor.motor_asyncio import AsyncIOMotorClient
-from core.entities.portfolio_documents import PortfolioDocument
+from core.entities.portfolio_document import PortfolioDocument
 
 from domain.models.portfolio import Portfolio
 from domain.usecases.repositories.portfolio_repository import PortfolioRepository
 
 class PortfolioRepositoryImpl(PortfolioRepository):
-
-    async def init_db(self, url: str) -> None:
-        client = AsyncIOMotorClient(url)
-        await self.__beanie_repository.init_beanie(database=client.portfolio, document_models=[Portfolio])
-
+    
     async def add_data(self, portfolio: Portfolio) -> Portfolio:
         portfolio_doc = PortfolioDocument(**portfolio.model_dump())
         await portfolio_doc.insert()
