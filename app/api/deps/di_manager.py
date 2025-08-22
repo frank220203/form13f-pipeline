@@ -10,7 +10,8 @@ from core.repositories.submission_repository_impl import SubmissionRepositoryImp
 from core.external_interfaces.httpx_client import HttpxClient
 from core.external_interfaces.edgar_service_impl import EdgarServiceImpl
 from core.external_interfaces.kafka_service_impl import KafkaServiceImpl
-from core.external_interfaces.parser_service_impl import PaserServiceImpl
+from core.external_interfaces.xml_parser_service_impl import XmlPaserServiceImpl
+from core.external_interfaces.html_parser_service_impl import HtmlPaserServiceImpl
 
 from domain.db_manager import DbManager
 from domain.logger_manager import LoggerManager
@@ -21,8 +22,9 @@ from domain.usecases.pipeline_usecase import PipelineUsecase
 
 from domain.usecases.services.api_caller import ApiCaller
 from domain.usecases.services.edgar_service import EdgarService
-from domain.usecases.services.parser_service import PaserService
 from domain.usecases.services.message_handler import MessageHandler
+from domain.usecases.services.xml_parser_service import XmlPaserService
+from domain.usecases.services.html_parser_service import HtmlPaserService
 
 from domain.usecases.repositories.ticker_repository import TickerRepository
 from domain.usecases.repositories.submission_repository import SubmissionRepository
@@ -46,8 +48,10 @@ def get_db_manager() -> DbManager:
 ## Services
 def get_api_caller() -> ApiCaller:
     return HttpxClient()
-def get_paser_service() -> PaserService:
-    return PaserServiceImpl()
+def get_xml_paser_service() -> XmlPaserService:
+    return XmlPaserServiceImpl()
+def get_html_paser_service() -> HtmlPaserService:
+    return HtmlPaserServiceImpl()
 def get_kafka_service(request: Request) -> MessageHandler:
     return request.app.state.kafka_service
 def get_edgar_service(settings: ConfigManager = Depends(get_config_manager)) -> EdgarService:
@@ -63,10 +67,11 @@ def get_submission_repository() -> SubmissionRepository:
 def get_filings_usecase(
         api_caller: ApiCaller = Depends(get_api_caller),
         edgar_service: EdgarService = Depends(get_edgar_service),
-        paser_service: PaserService = Depends(get_paser_service),
         message_handler: MessageHandler = Depends(get_kafka_service),
+        xml_paser_service: XmlPaserService = Depends(get_xml_paser_service),
+        html_paser_service: HtmlPaserService = Depends(get_html_paser_service)
 ) -> FilingsUsecase:
-    return FilingsUsecase(api_caller, edgar_service, paser_service, message_handler)
+    return FilingsUsecase(api_caller, edgar_service, message_handler, xml_paser_service, html_paser_service)
 def get_pipeline_usecase() -> PipelineUsecase:
     return PipelineUsecase(ticker_repository=get_ticker_repository(), submission_repository=get_submission_repository())
 

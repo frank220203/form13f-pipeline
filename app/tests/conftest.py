@@ -45,9 +45,13 @@ def mock_edgar_service() -> MagicMock:
 
 # paser_service Mock
 @pytest.fixture(scope="module")
-def mock_parser_service() -> MagicMock:
-      mock_parser_service = MagicMock()
-      return mock_parser_service
+def mock_xml_parser_service() -> MagicMock:
+      mock_xml_parser_service = MagicMock()
+      return mock_xml_parser_service
+@pytest.fixture(scope="module")
+def mock_html_parser_service() -> MagicMock:
+      mock_html_parser_service = MagicMock()
+      return mock_html_parser_service
 
 # massege_handler Mock
 @pytest.fixture(scope="module")
