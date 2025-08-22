@@ -105,7 +105,7 @@ async def test_get_all_submissions(
         }
 
     # Mocking
-    # app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
+    app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
 
     # When
     response = client.get(f"{api_version}/filings/submissions?cik=0001067983&email=test@email.com&filing_type=13F-HR&filing_type=13F-HR/A")
@@ -186,7 +186,7 @@ async def test_get_portfolio(
     # app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
 
     # When
-    response = client.get(f"{api_version}/filings/portfolio?email=sample@email.com&cik=0001067983&accession_number=0000950123-25-005701")
+    response = client.get(f"{api_version}/filings/portfolio?email=sample@email.com&cik=0001067983&accession_number=0000950123-25-008343")
 
     # Then
     assert response.status_code == 200

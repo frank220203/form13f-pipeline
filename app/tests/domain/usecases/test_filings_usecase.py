@@ -10,8 +10,9 @@ from domain.usecases.filings_usecase import FilingsUsecase
 async def test_get_all_tickers(
     mock_api_caller: MagicMock,
     mock_edgar_service: MagicMock,
-    mock_parser_service: MagicMock,
-    mock_message_handler: MagicMock
+    mock_message_handler: MagicMock,
+    mock_xml_parser_service: MagicMock,
+    mock_html_parser_service: MagicMock
 ) -> None:
     # Given & Mock
     mock_edgar_service.get_edgar_url.return_value = "https://www.test.com"
@@ -30,13 +31,15 @@ async def test_get_all_tickers(
             "Nasdaq"
         ]]
     }
+    mock_message_handler.publish = AsyncMock()
 
     # When & Mocking
     filings_usecase = FilingsUsecase(
         mock_api_caller,
         mock_edgar_service,
-        mock_parser_service,
-        mock_message_handler
+        mock_message_handler,
+        mock_xml_parser_service,
+        mock_html_parser_service
     )
 
     tickers = await filings_usecase.get_all_tickers(headers={'User-Agent': "test@email.com"})
@@ -49,8 +52,9 @@ async def test_get_all_tickers(
 async def test_get_all_submissions(
     mock_api_caller: MagicMock,
     mock_edgar_service: MagicMock,
-    mock_parser_service: MagicMock,
-    mock_message_handler: MagicMock
+    mock_message_handler: MagicMock,
+    mock_xml_parser_service: MagicMock,
+    mock_html_parser_service: MagicMock
 ) -> None:
     # Given & Mock
     mock_edgar_service.get_all_submissions_url.return_value = "https://www.test.com"
@@ -108,12 +112,15 @@ async def test_get_all_submissions(
     mock_api_caller.call.return_value = json.dumps(mock_response)
     mock_submissions = Submission(**json.loads(mock_api_caller.call.return_value))
     mock_edgar_service.find_submissions.return_value = mock_submissions
+    mock_message_handler.publish = AsyncMock()
+
     # When & Mocking
     filings_usecase = FilingsUsecase(
         mock_api_caller,
         mock_edgar_service,
-        mock_parser_service,
-        mock_message_handler
+        mock_message_handler,
+        mock_xml_parser_service,
+        mock_html_parser_service
     )
 
     submissions = await filings_usecase.get_all_submissions(cik="0001067983", headers={'User-Agent': 'test@email.com'}, filing_type=["13F-HR", "13F-HR/A"])
@@ -126,14 +133,15 @@ async def test_get_all_submissions(
 async def test_get_portfolio(
     mock_api_caller: MagicMock,
     mock_edgar_service: MagicMock,
-    mock_parser_service: MagicMock,
-    mock_message_handler: MagicMock
+    mock_message_handler: MagicMock,
+    mock_xml_parser_service: MagicMock,
+    mock_html_parser_service: MagicMock
 ) -> None:
     # Given & Mock
-    mock_edgar_service.get_portfolio_url.return_value = ("https://www.A.com", "https://www.B.com")    
+    mock_edgar_service.get_portfolio_url.return_value = "https://www.A.com"
     mock_api_caller.call = AsyncMock()
     mock_api_caller.call.return_value = "<infoTable><nameOfIssuer>CHUBB LIMITED</nameOfIssuer><titleOfClass>COM</titleOfClass><cusip>H1467J104</cusip><value>8163932430</value><shrsOrPrnAmt><sshPrnamt>27033784</sshPrnamt><sshPrnamtType>SH</sshPrnamtType></shrsOrPrnAmt><investmentDiscretion>DFND</investmentDiscretion><otherManager>4,11</otherManager><votingAuthority><Sole>27033784</Sole><Shared>0</Shared><None>0</None></votingAuthority></infoTable>"
-    mock_parser_service.xml_to_dict.return_value = {
+    mock_xml_parser_service.xml_to_dict.return_value = {
         "infoTable": [{
             "nameOfIssuer": "ALLY FINL INC", 
             "titleOfClass": "COM", 
@@ -152,15 +160,18 @@ async def test_get_portfolio(
             }
         }]
     }
+    mock_html_parser_service.find_xml.return_value = "FileName"
+    mock_message_handler.publish = AsyncMock()
 
     # When & Mocking
     filings_usecase = FilingsUsecase(
         mock_api_caller, 
         mock_edgar_service,
-        mock_parser_service, 
-        mock_message_handler
+        mock_message_handler,
+        mock_xml_parser_service,
+        mock_html_parser_service
         )
     urls = await filings_usecase.get_portfolio(cik="0001067983", headers={'User-Agent': 'test@email.com'}, accession_number="0000950123-25-005701")
 
     # Then
-    assert urls == mock_parser_service.xml_to_dict.return_value
+    assert urls == mock_xml_parser_service.xml_to_dict.return_value

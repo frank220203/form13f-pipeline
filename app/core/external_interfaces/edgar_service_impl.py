@@ -27,15 +27,23 @@ class EdgarServiceImpl(EdgarService):
     def get_submissions_url(self, cik: str) -> str:
         return f"{self.__submissions_url}{cik}.json"
     
-    def get_portfolio_url(self, cik: str, accession_number: str) -> tuple[str, str]:
+    def get_portfolio_url(
+            self, 
+            cik: str, 
+            accession_number: str, 
+            type: str = None,
+            file_name: str = None
+            ) -> str:
         cik = cik[3:]
         accession_number = accession_number.replace("-", '')
-        return f"{self.__data_url}/{cik}/{accession_number}{self.__meta_url}", f"{self.__data_url}/{cik}/{accession_number}{self.__issuers_url}"
-    
-    def get_portfolio_url(self, cik: str, accession_number: str) -> tuple[str, str]:
-        cik = cik[3:]
-        accession_number = accession_number.replace("-", '')
-        return f"{self.__data_url}/{cik}/{accession_number}{self.__meta_url}", f"{self.__data_url}/{cik}/{accession_number}{self.__issuers_url}"
+        url = ""
+        if type == "meta":
+            url = f"{self.__data_url}/{cik}/{accession_number}{self.__meta_url}"
+        elif type == "data":
+            url = f"{self.__url}{file_name}"
+        else:
+            url = f"{self.__data_url}/{cik}/{accession_number}"
+        return url
     
     def find_submissions(self, submissions: Submission, filing_type: List[str]) -> Submission:
         recent = submissions.filings['recent']

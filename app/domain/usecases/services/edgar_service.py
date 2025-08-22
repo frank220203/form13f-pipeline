@@ -10,7 +10,7 @@ class EdgarService(ABC):
     def get_submissions_url(self, cik: str, filing_type: str) -> List:
         pass
     @abstractmethod
-    def get_portfolio_url(self, cik: str, accession_number: str) -> tuple[str, str]:
+    def get_portfolio_url(self, cik: str, accession_number: str, type: str, file_name: str) -> str:
         pass
     @abstractmethod
     def find_submissions(self, submissions: Submission, filings_type: List[str]) -> Submission:
