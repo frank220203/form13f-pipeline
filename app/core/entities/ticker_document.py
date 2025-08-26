@@ -1,6 +1,6 @@
-from pymongo import IndexModel
 from beanie import Document
 from typing import Optional
+from pymongo import IndexModel
 from datetime import date
 
 class TickerDocument(Document):

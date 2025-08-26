@@ -1,15 +1,15 @@
 from typing import List
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, AliasChoices
 
 class Submission(BaseModel):
     cik: str
-    # serialization_alias는 Validation 검사 X
-    entity_type: str = Field(..., serialization_alias='entityType')
+    # AliasChoices로 두 가지 유형 모두 허용
+    entity_type: str = Field(..., alias=AliasChoices('entityType', 'entity_type'))
     sic: str
-    sic_description: str = Field(..., serialization_alias='sicDescription')
-    owner_org: str = Field(..., serialization_alias='ownerOrg')
-    insider_transaction_for_owner_exists: int = Field(..., serialization_alias='insiderTransactionForOwnerExists')
-    insider_transaction_for_issuer_exists: int = Field(..., serialization_alias='insiderTransactionForIssuerExists')
+    sic_description: str = Field(..., alias=AliasChoices('sicDescription', 'sic_description'))
+    owner_org: str = Field(..., alias=AliasChoices('ownerOrg', 'owner_org'))
+    insider_transaction_for_owner_exists: int = Field(..., alias=AliasChoices('insiderTransactionForOwnerExists', 'insider_transaction_for_owner_exists'))
+    insider_transaction_for_issuer_exists: int = Field(..., alias=AliasChoices('insiderTransactionForIssuerExists', 'insider_transaction_for_issuer_exists'))
     name: str
     tickers: List[str]
     exchanges: List[str]
@@ -19,16 +19,13 @@ class Submission(BaseModel):
     lei: None
     description: str
     website: str
-    investor_website: str = Field(..., serialization_alias='investorWebsite')
+    investor_website: str = Field(..., alias=AliasChoices('investorWebsite', 'investor_website'))
     category: str
-    fiscal_year_end: str = Field(..., serialization_alias='fiscalYearEnd')
-    state_of_incorporation: str = Field(..., serialization_alias='stateOfIncorporation')
-    state_of_incorporation_description: str = Field(..., serialization_alias='stateOfIncorporationDescription')
+    fiscal_year_end: str = Field(..., alias=AliasChoices('fiscalYearEnd', 'fiscal_year_end'))
+    state_of_incorporation: str = Field(..., alias=AliasChoices('stateOfIncorporation', 'state_of_incorporation'))
+    state_of_incorporation_description: str = Field(..., alias=AliasChoices('stateOfIncorporationDescription', 'state_of_incorporation_description'))
     addresses: dict
     phone: str
     flags: str
-    former_names: List[dict] = Field(..., serialization_alias='formerNames')
+    former_names: List[dict] = Field(..., alias=AliasChoices('formerNames', 'former_names'))
     filings: dict
-
-    class Config:
-        allow_population_by_field_name = True
