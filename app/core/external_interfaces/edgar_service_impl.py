@@ -9,7 +9,6 @@ class EdgarServiceImpl(EdgarService):
     __url: str
     __data_url: str
     __meta_url: str
-    __issuers_url: str
     __tickers_url: str
     __submissions_url: str
 
@@ -17,7 +16,6 @@ class EdgarServiceImpl(EdgarService):
         self.__url = settings.get_sec_url()
         self.__data_url = settings.get_data_url()
         self.__meta_url = settings.get_meta_url()
-        self.__issuers_url = settings.get_issuers_url()
         self.__tickers_url = settings.get_tickers_url()
         self.__submissions_url = settings.get_submissions_url()
         
