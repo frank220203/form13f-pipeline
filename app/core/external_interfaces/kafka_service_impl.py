@@ -48,9 +48,11 @@ class KafkaServiceImpl(MessageHandler):
                 result = await self.__pipeline_usecase.load_tickers(msg_to_str)
             elif msg.topic == 'submission':
                 result = await self.__pipeline_usecase.load_submissions(msg_to_str)
+            elif msg.topic == 'portfolio':
+                result = await self.__pipeline_usecase.load_portfolios(msg_to_str)
             # 단건 테스트용 break
             break
-        log_msg = str(result)
+        log_msg = str(result)[:300]
         if len(log_msg) > 100:
             self.__logger.info(f"Kafka consumed message : {log_msg[:100]}")
         else:

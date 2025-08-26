@@ -5,6 +5,7 @@ from core.config import Settings
 
 from core.repositories.beanie_repository import BeanieRepository
 from core.repositories.ticker_repository_impl import TickerRepositoryImpl
+from core.repositories.portfolio_repository_impl import PortfolioRepositoryImpl
 from core.repositories.submission_repository_impl import SubmissionRepositoryImpl
 
 from core.external_interfaces.httpx_client import HttpxClient
@@ -27,6 +28,7 @@ from domain.usecases.services.xml_parser_service import XmlPaserService
 from domain.usecases.services.html_parser_service import HtmlPaserService
 
 from domain.usecases.repositories.ticker_repository import TickerRepository
+from domain.usecases.repositories.portfolio_repository import PortfolioRepository
 from domain.usecases.repositories.submission_repository import SubmissionRepository
 
 # fastapi는 의존성 부여를 endpoint에서 시작하고, 
@@ -60,6 +62,8 @@ def get_edgar_service(settings: ConfigManager = Depends(get_config_manager)) -> 
 ## Repositories
 def get_ticker_repository() -> TickerRepository:
     return TickerRepositoryImpl()
+def get_portfolio_repository() -> PortfolioRepository:
+    return PortfolioRepositoryImpl()
 def get_submission_repository() -> SubmissionRepository:
     return SubmissionRepositoryImpl()
 
@@ -71,10 +75,24 @@ def get_filings_usecase(
         xml_paser_service: XmlPaserService = Depends(get_xml_paser_service),
         html_paser_service: HtmlPaserService = Depends(get_html_paser_service)
 ) -> FilingsUsecase:
-    return FilingsUsecase(api_caller, edgar_service, message_handler, xml_paser_service, html_paser_service)
+    return FilingsUsecase(
+        api_caller, 
+        edgar_service, 
+        message_handler, 
+        xml_paser_service, 
+        html_paser_service
+        )
 def get_pipeline_usecase() -> PipelineUsecase:
-    return PipelineUsecase(ticker_repository=get_ticker_repository(), submission_repository=get_submission_repository())
+    return PipelineUsecase(
+        ticker_repository=get_ticker_repository(), 
+        portfolio_repository=get_portfolio_repository(), 
+        submission_repository=get_submission_repository()
+        )
 
 ## Connection
 def get_kafka_connection() -> MessageHandler:
-    return KafkaServiceImpl(settings=get_config_manager(), logger=get_logger_manager(), pipeline_usecase=get_pipeline_usecase())
+    return KafkaServiceImpl(
+        settings=get_config_manager(), 
+        logger=get_logger_manager(), 
+        pipeline_usecase=get_pipeline_usecase()
+        )
