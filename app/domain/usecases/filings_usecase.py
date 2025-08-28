@@ -1,7 +1,7 @@
 import json
 from typing import List
 
-from domain.models.submission import Submission
+from domain.models.submissions.submission import Submission
 
 from domain.usecases.services.api_caller import ApiCaller
 from domain.usecases.services.edgar_service import EdgarService
@@ -41,7 +41,7 @@ class FilingsUsecase:
         url = self.__edgar_service.get_edgar_tickers_url()
         tickers = await self.__api_caller.call(url=url, headers=headers)
 
-        # Kafak msg 발행
+        # Kafka msg 발행
         await self.__message_handler.publish('ticker', tickers)
         return tickers
     
@@ -53,14 +53,14 @@ class FilingsUsecase:
     ) -> dict:
         url = self.__edgar_service.get_submissions_url(cik)
         response = await self.__api_caller.call(url=url, headers=headers)
-        submissions = response
+        submissions = Submission(**json.loads(response))
         if filing_type:
-            filtered_submissions = self.__edgar_service.find_submissions(Submission(**json.loads(response)), filing_type)
-            submissions = filtered_submissions.model_dump()
+            filtered_recent = self.__edgar_service.filter_recent(submissions.filings.recent, filing_type)
+            submissions.filings.recent = filtered_recent
 
-        # Kafak msg 발행
-        await self.__message_handler.publish('submission', submissions)
-        return submissions
+        # Kafka msg 발행
+        await self.__message_handler.publish('submission', submissions.model_dump())
+        return submissions.model_dump()
     
     async def get_portfolio(
             self,
@@ -74,7 +74,7 @@ class FilingsUsecase:
         response = await self.__api_caller.call(url=meta_url, headers=headers)
         portfolio.update(self.__xml_paser_service.xml_to_dict(response))
 
-        # File list 추출
+        # Filing list 추출
         data_list_url = self.__edgar_service.get_portfolio_url(cik=cik, accession_number=accession_number)
         response = await self.__api_caller.call(url=data_list_url, headers=headers)
 
@@ -84,6 +84,6 @@ class FilingsUsecase:
         response = await self.__api_caller.call(url=issuers_url, headers=headers)
         portfolio.update(self.__xml_paser_service.xml_to_dict(response))
 
-        # Kafak msg 발행
+        # Kafka msg 발행
         await self.__message_handler.publish('portfolio', portfolio)
         return portfolio

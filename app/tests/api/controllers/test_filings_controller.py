@@ -57,26 +57,45 @@ async def test_get_all_submissions(
         'cik':"0001067983", 
         'entityType':"operating",
         'sic':"6331",
-        'sicDescription':"Fire, Marine",
+        'sicDescription':"Fire, Marine & Casualty Insurance",
         'ownerOrg':"02 Finance",
         'insiderTransactionForOwnerExists':1,
         'insiderTransactionForIssuerExists':1,
         'name':"BERKSHIRE HATHAWAY INC",
         'tickers':["BRK-B", "BRK-A"],
         'exchanges':["NYSE", "NYSE"],
-        'ein':None,
-        'lei':None,
+        'ein':"470813844",
+        'lei':"",
         'description':"",
         'website':"",
         'investorWebsite':"",
-        'category':"Large accelerated",
+        'category':"Large accelerated filer",
         'fiscalYearEnd':"1231",
         'stateOfIncorporation':"DE",
         'stateOfIncorporationDescription':"DE",
         'addresses':{'mailing':{
-                'street1':"3555 FARNAM",
-                'street2':None,
-                'city':"OMAHA"
+                'street1':"3555 FARNAM STREET",
+                'street2':"",
+                'city':"OMAHA",
+                'stateOrCountry':"NE",
+                'zipCode':"68131",
+                'stateOrCountryDescription':"NE",
+                'isForeignLocation':"0",
+                'foreignStateTerritory':"",
+                'country':"",
+                'countryCode':""
+            },
+            'business':{
+                'street1':"3555 FARNAM STREET",
+                'street2':"",
+                'city':"OMAHA",
+                'stateOrCountry':"NE",
+                'zipCode':"68131",
+                'stateOrCountryDescription':"NE",
+                'isForeignLocation':"0",
+                'foreignStateTerritory':"",
+                'country':"",
+                'countryCode':""
             }},
         'phone':"4023461400",
         'flags':"",
@@ -86,6 +105,7 @@ async def test_get_all_submissions(
             'to':"1999-01-05"
             }],
         'filings':{'recent':{
+            'form':["13F-HR"],
             'accessionNumber':[
                 "0000950123-25-00570", 
                 "0000950170-25-102306", 
@@ -100,7 +120,8 @@ async def test_get_all_submissions(
                 "2025-07-31",
                 "2025-07-31",
                 "2025-07-31"
-                ]
+                ],
+            'acceptanceDateTime':["2023-08-14T20:01:03.000Z"]
             }}
         }
 

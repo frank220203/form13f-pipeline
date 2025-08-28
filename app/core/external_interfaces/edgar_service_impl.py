@@ -1,7 +1,7 @@
 from typing import List
 from core.config import Settings
 
-from domain.models.submission import Submission
+from domain.models.submissions.filings.recent import Recent
 from domain.usecases.services.edgar_service import EdgarService
 
 class EdgarServiceImpl(EdgarService):
@@ -43,27 +43,30 @@ class EdgarServiceImpl(EdgarService):
             url = f"{self.__data_url}/{cik}/{accession_number}"
         return url
     
-    def find_submissions(self, submissions: Submission, filing_type: List[str]) -> Submission:
-        recent = submissions.filings['recent']
-        filtered_filings = {'recent':[{}]}
-        filtered_recent = []
-        accession_numbers = recent['accessionNumber']
-        filings_dates = recent['filingDate']
-        report_dates = recent['reportDate']
-        acceptance_date_times = recent['acceptanceDateTime']
-        forms = recent['form']
+    def filter_recent(self, recent: Recent, filing_type: List[str]) -> Recent:
+        filtered_forms = []
+        accession_numbers = recent.accession_number
+        filtered_accession_numbers = []
+        filings_dates = recent.filing_date
+        filtered_filings_dates = []
+        report_dates = recent.report_date
+        filtered_report_dates = []
+        acceptance_date_times = recent.acceptance_date_time
+        filtered_acceptance_date_times = []
 
         for target in filing_type:
-            for i, form_type in enumerate(forms):
+            for i, form_type in enumerate(recent.form):
                 if form_type == target:
-                    filtered_recent.append({
-                        'form':form_type,
-                        'accessionNumber':accession_numbers[i],
-                        'filingDate':filings_dates[i],
-                        'reportDate':report_dates[i],
-                        'acceptanceDateTime':acceptance_date_times[i]
-                    })
+                    filtered_forms.append(form_type)
+                    filtered_accession_numbers.append(accession_numbers[i])
+                    filtered_filings_dates.append(filings_dates[i])
+                    filtered_report_dates.append(report_dates[i])
+                    filtered_acceptance_date_times.append(acceptance_date_times[i])
 
-        filtered_filings['recent'] = filtered_recent
-        submissions.filings = filtered_filings
-        return submissions
+        recent.form = filtered_forms
+        recent.accession_number = filtered_accession_numbers
+        recent.filing_date = filtered_filings_dates
+        recent.report_date = filtered_report_dates
+        recent.acceptance_date_time = filtered_acceptance_date_times
+
+        return recent
