@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from domain.models.submission import Submission
+from domain.models.submissions.submission import Submission
 
 class SubmissionRepository(ABC):
     @abstractmethod

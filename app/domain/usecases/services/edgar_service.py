@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
-from domain.models.submission import Submission
+from domain.models.submissions.filings.recent import Recent
 
 class EdgarService(ABC):
     @abstractmethod
@@ -13,5 +13,5 @@ class EdgarService(ABC):
     def get_portfolio_url(self, cik: str, accession_number: str, type: str, file_name: str) -> str:
         pass
     @abstractmethod
-    def find_submissions(self, submissions: Submission, filings_type: List[str]) -> Submission:
+    def filter_recent(self, recent: Recent, filings_type: List[str]) -> Recent:
         pass

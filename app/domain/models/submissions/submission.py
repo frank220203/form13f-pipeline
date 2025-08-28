@@ -1,5 +1,8 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel, Field, AliasChoices
+from domain.models.submissions.former_name import FormerName
+from domain.models.submissions.filings.filing import Filing
+from domain.models.submissions.addresses.address import Address
 
 class Submission(BaseModel):
     cik: str
@@ -14,9 +17,9 @@ class Submission(BaseModel):
     tickers: List[str]
     exchanges: List[str]
     # 타입 확인이 안됨, -> 2025-08-21 str으로 확인
-    ein: str
+    ein: Optional[str] = None
     # 타입 확인이 안됨, 일단 테이블은 string으로
-    lei: None
+    lei: Optional[str] = None
     description: str
     website: str
     investor_website: str = Field(..., alias=AliasChoices('investorWebsite', 'investor_website'))
@@ -24,8 +27,8 @@ class Submission(BaseModel):
     fiscal_year_end: str = Field(..., alias=AliasChoices('fiscalYearEnd', 'fiscal_year_end'))
     state_of_incorporation: str = Field(..., alias=AliasChoices('stateOfIncorporation', 'state_of_incorporation'))
     state_of_incorporation_description: str = Field(..., alias=AliasChoices('stateOfIncorporationDescription', 'state_of_incorporation_description'))
-    addresses: dict
+    addresses: Address
     phone: str
     flags: str
-    former_names: List[dict] = Field(..., alias=AliasChoices('formerNames', 'former_names'))
-    filings: dict
+    former_names: List[FormerName] = Field(..., alias=AliasChoices('formerNames', 'former_names'))
+    filings: Filing

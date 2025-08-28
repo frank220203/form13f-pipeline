@@ -1,6 +1,6 @@
 from core.entities.submission_document import SubmissionDocument
 
-from domain.models.submission import Submission
+from domain.models.submissions.submission import Submission
 from domain.usecases.repositories.submission_repository import SubmissionRepository
 
 class SubmissionRepositoryImpl(SubmissionRepository):

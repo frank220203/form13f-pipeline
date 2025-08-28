@@ -2,7 +2,7 @@ import json
 import pytest
 from unittest.mock import MagicMock, AsyncMock
 
-from domain.models.submission import Submission
+from domain.models.submissions.submission import Submission
 from domain.usecases.filings_usecase import FilingsUsecase
 
 # get_all_tickers 단위 테스트
@@ -59,59 +59,100 @@ async def test_get_all_submissions(
     # Given & Mock
     mock_edgar_service.get_all_submissions_url.return_value = "https://www.test.com"
     mock_response = {
-        'cik':'0001067983', 
-        'entityType':'operating',
-        'sic':'6331',
-        'sicDescription':'Fire, Marine',
-        'ownerOrg':'02 Finance',
+        'cik':"0001067983", 
+        'entityType':"operating",
+        'sic':"6331",
+        'sicDescription':"Fire, Marine & Casualty Insurance",
+        'ownerOrg':"02 Finance",
         'insiderTransactionForOwnerExists':1,
         'insiderTransactionForIssuerExists':1,
-        'name':'BERKSHIRE HATHAWAY INC',
-        'tickers':['BRK-B', 'BRK-A'],
-        'exchanges':['NYSE', 'NYSE'],
-        'ein':None,
-        'lei':None,
-        'description':'',
-        'website':'',
-        'investorWebsite':'',
-        'category':'Large accelerated',
-        'fiscalYearEnd':'1231',
-        'stateOfIncorporation':'DE',
-        'stateOfIncorporationDescription':'DE',
+        'name':"BERKSHIRE HATHAWAY INC",
+        'tickers':["BRK-B", "BRK-A"],
+        'exchanges':["NYSE", "NYSE"],
+        'ein':"470813844",
+        'lei':"",
+        'description':"",
+        'website':"",
+        'investorWebsite':"",
+        'category':"Large accelerated filer",
+        'fiscalYearEnd':"1231",
+        'stateOfIncorporation':"DE",
+        'stateOfIncorporationDescription':"DE",
         'addresses':{'mailing':{
-                'street1':'3555 FARNAM',
-                'street2':None,
-                'city':'OMAHA'
+                'street1':"3555 FARNAM STREET",
+                'street2':"",
+                'city':"OMAHA",
+                'stateOrCountry':"NE",
+                'zipCode':"68131",
+                'stateOrCountryDescription':"NE",
+                'isForeignLocation':"0",
+                'foreignStateTerritory':"",
+                'country':"",
+                'countryCode':""
+            },
+            'business':{
+                'street1':"3555 FARNAM STREET",
+                'street2':"",
+                'city':"OMAHA",
+                'stateOrCountry':"NE",
+                'zipCode':"68131",
+                'stateOrCountryDescription':"NE",
+                'isForeignLocation':"0",
+                'foreignStateTerritory':"",
+                'country':"",
+                'countryCode':""
             }},
-        'phone':'4023461400',
-        'flags':'',
+        'phone':"4023461400",
+        'flags':"",
         'formerNames':[{
-            'name':'NBH INC',
-            'from':'1998-08-10',
-            'to':'1999-01-05'
+            'name':"NBH INC",
+            'from':"1998-08-10",
+            'to':"1999-01-05"
             }],
         'filings':{'recent':{
+            'form':["13F-HR"],
             'accessionNumber':[
-                '0000950123-25-00570', 
-                '0000950170-25-102306', 
-                '0000950170-25-102303'
+                "0000950123-25-00570", 
+                "0000950170-25-102306", 
+                "0000950170-25-102303"
                 ],
             'filingDate':[
-                '2025-08-04',
-                '2025-08-04',
-                '2025-08-04'
+                "2025-08-04",
+                "2025-08-04",
+                "2025-08-04"
                 ],
             'reportDate':[
-                '2025-07-31',
-                '2025-07-31',
-                '2025-07-31'
-                ]
+                "2025-07-31",
+                "2025-07-31",
+                "2025-07-31"
+                ],
+            'acceptanceDateTime':["2023-08-14T20:01:03.000Z"]
             }}
         }
     mock_api_caller.call = AsyncMock()
     mock_api_caller.call.return_value = json.dumps(mock_response)
     mock_submissions = Submission(**json.loads(mock_api_caller.call.return_value))
-    mock_edgar_service.find_submissions.return_value = mock_submissions
+    mock_recent = {'recent':{
+            'form':["13F-HR"],
+            'accessionNumber':[
+                "0000950123-25-00570", 
+                "0000950170-25-102306", 
+                "0000950170-25-102303"
+                ],
+            'filingDate':[
+                "2025-08-04",
+                "2025-08-04",
+                "2025-08-04"
+                ],
+            'reportDate':[
+                "2025-07-31",
+                "2025-07-31",
+                "2025-07-31"
+                ],
+            'acceptanceDateTime':["2023-08-14T20:01:03.000Z"]
+            }}
+    mock_edgar_service.filter_recent.return_value = mock_recent
+    mock_submissions.filings.recent = mock_recent
     mock_message_handler.publish = AsyncMock()
 
     # When & Mocking
