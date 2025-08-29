@@ -1,5 +1,5 @@
 from typing import List, Optional
-from domain.models.portfolio import Portfolio
+from domain.models.portfolios.portfolio import Portfolio
 from domain.usecases.repositories.portfolio_repository import PortfolioRepository
 
 class PortfolioService():

@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field, AliasChoices
 
 class Issuer(BaseModel):
     name_of_issuer: str = Field(..., alias=AliasChoices('nameOfIssuer', 'name_of_issuer'), description="상장회사 이름")
-    tilte_of_class: str = Field(..., alias=AliasChoices('titleOfClass', 'tilte_of_class'), description="주식 종류")
+    title_of_class: str = Field(..., alias=AliasChoices('titleOfClass', 'title_of_class'), description="주식 종류")
     cusip: str = Field(..., description="미국에서 사용하는 주식 고유 식별 번호/국내도 형식만 다를 뿐, 동일")
     value: str = Field(..., description="주식 가치")
     shrs_or_prn_amt: dict = Field(..., alias=AliasChoices('shrsOrPrnAmt', 'shrs_or_prn_amt'), description="sshPrnamt : 주식 수량 / sshPrnamtType: SH(주식), PRN(채권)")
