@@ -2,9 +2,8 @@ import json
 from typing import List
 
 from domain.models.ticker import Ticker
-from domain.models.issuer import Issuer
-from domain.models.portfolio import Portfolio
-from domain.models.submission import Submission
+from domain.models.portfolios.portfolio import Portfolio
+from domain.models.submissions.submission import Submission
 
 from domain.usecases.repositories.ticker_repository import TickerRepository
 from domain.usecases.repositories.portfolio_repository import PortfolioRepository
@@ -55,11 +54,7 @@ class PipelineUsecase:
         except Exception as e:
             raise e     
         
-        portfolio_dict = {}
-        portfolio_dict.update(header_data=data['edgarSubmission']['headerData'], form_data=data['edgarSubmission']['formData'])
-        issuers = []
-        for issuer in data['informationTable']['infoTable'] :
-            issuers.append(Issuer(**issuer))
-        portfolio_dict.update({'issuers':issuers})
-        
-        return await self.__portfolio_repository.add_data(Portfolio(**portfolio_dict))
+        return await self.__portfolio_repository.add_data(Portfolio(**data))
+    
+    async def get_issuers_cik(self, cik: str) -> List[str]:
+        portfolio = PortfolioRepository.get_portfolio_by_cik(cik)

@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from domain.models.portfolio import Portfolio
+from domain.models.portfolios.portfolio import Portfolio
 
 class PortfolioRepository(ABC):
     @abstractmethod

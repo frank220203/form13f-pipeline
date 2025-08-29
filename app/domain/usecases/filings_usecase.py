@@ -1,6 +1,7 @@
 import json
 from typing import List
 
+from domain.models.portfolios.portfolio import Portfolio
 from domain.models.submissions.submission import Submission
 
 from domain.usecases.services.api_caller import ApiCaller
@@ -68,11 +69,11 @@ class FilingsUsecase:
             headers: dict,
             accession_number: str
     ) -> dict:
-        portfolio = {}
         # Meta 추출
         meta_url = self.__edgar_service.get_portfolio_url(cik=cik, accession_number=accession_number, type="meta")
         response = await self.__api_caller.call(url=meta_url, headers=headers)
-        portfolio.update(self.__xml_paser_service.xml_to_dict(response))
+        header_data = self.__xml_paser_service.xml_to_dict(response)['edgarSubmission']['headerData']
+        form_data = self.__xml_paser_service.xml_to_dict(response)['edgarSubmission']['formData']
 
         # Filing list 추출
         data_list_url = self.__edgar_service.get_portfolio_url(cik=cik, accession_number=accession_number)
@@ -82,8 +83,9 @@ class FilingsUsecase:
         xml_link = self.__html_paser_servcie.find_xml(response)
         issuers_url = self.__edgar_service.get_portfolio_url(cik=cik, accession_number=accession_number, type="data", file_name=xml_link)
         response = await self.__api_caller.call(url=issuers_url, headers=headers)
-        portfolio.update(self.__xml_paser_service.xml_to_dict(response))
+        info_table = self.__xml_paser_service.xml_to_dict(response)['informationTable']['infoTable']
+        portfolio = Portfolio(header_data=header_data, form_data=form_data, issuers=info_table)
 
         # Kafka msg 발행
-        await self.__message_handler.publish('portfolio', portfolio)
-        return portfolio
+        await self.__message_handler.publish('portfolio', portfolio.model_dump())
+        return portfolio.model_dump()
