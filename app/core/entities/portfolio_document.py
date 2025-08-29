@@ -29,5 +29,5 @@ class PortfolioDocument(Document):
     class Settings:
         name = "portfolio"
         indexes = [
-            IndexModel(keys="header_data", unique=True)
+            IndexModel(keys=["header_data.filerInfo.filer.credentials.cik", "form_data.signature_block.signature_date"], unique=True)
         ]
