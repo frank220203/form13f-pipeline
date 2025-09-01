@@ -16,3 +16,4 @@ class TickerDocument(Document):
         indexes = [
             IndexModel(keys="ticker", unique=True)
         ]
+        ttl_seconds = 604800
