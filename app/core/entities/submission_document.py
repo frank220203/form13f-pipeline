@@ -37,3 +37,4 @@ class SubmissionDocument(Document):
         indexes = [
             IndexModel(keys="filings", unique=True)
         ]
+        ttl_seconds = 604800

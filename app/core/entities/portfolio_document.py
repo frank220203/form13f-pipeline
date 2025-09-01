@@ -31,3 +31,5 @@ class PortfolioDocument(Document):
         indexes = [
             IndexModel(keys=["header_data.filerInfo.filer.credentials.cik", "form_data.signature_block.signature_date"], unique=True)
         ]
+        # 데이터 1주일 보관
+        ttl_seconds = 604800
