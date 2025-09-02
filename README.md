@@ -47,6 +47,21 @@ cd app
 uvicorn main:app --port 8001 --reload
 ```
 
+### Git PR 방법
+```bash
+# main 브랜치 이동 후 최신 상태로 업데이트
+git checkout main
+git pull origin main
+# 새 브랜치 생성
+git checkout -b <branch-name>
+# 작업 완료 후 커밋 & 푸시
+# GitHub에서 PR 올리고 merge
+# 작업 완료한 브랜치 삭제(로컬)
+git branch -d <branch-name>
+# 작업 완료한 브랜치 삭제(원격)
+git push origin --delete <branch-name>
+```
+
 ### Test 진행
 ```bash
 # pytest 설치
@@ -75,4 +90,9 @@ pip install motor
 ### ODM(JPA와 같은 ORM, 다만 MongoDB는 정형화된 스키마가 없기 때문에 Object-Document Mapper라고 부름)
 ```bash
 pip install beanie
+```
+
+### Gemini API
+```bash
+pip install google-generativeai
 ```

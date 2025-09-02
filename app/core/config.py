@@ -22,6 +22,7 @@ class Settings(BaseSettings, ConfigManager):
     KAFKA_GROUP_PF: str
     MOBGO_DB_URL: str
     DOCUMENT_MODELS: str
+    GOOGLE_API_KEY: str
 
     def get_api_version(self) -> str:
         return self.API_VERSION
@@ -70,3 +71,6 @@ class Settings(BaseSettings, ConfigManager):
     
     def get_document_models(self) -> str:
         return self.DOCUMENT_MODELS
+    
+    def get_google_api_key(self) -> str:
+        return self.GOOGLE_API_KEY

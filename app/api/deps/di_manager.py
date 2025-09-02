@@ -6,9 +6,11 @@ from core.config import Settings
 from core.repositories.beanie_repository import BeanieRepository
 from core.repositories.ticker_repository_impl import TickerRepositoryImpl
 from core.repositories.portfolio_repository_impl import PortfolioRepositoryImpl
+from core.repositories.crosswalk_repository_impl import CrosswalkRepositoryImpl
 from core.repositories.submission_repository_impl import SubmissionRepositoryImpl
 
 from core.external_interfaces.httpx_client import HttpxClient
+from core.external_interfaces.gemini_prompt import GeminiPrompt
 from core.external_interfaces.edgar_service_impl import EdgarServiceImpl
 from core.external_interfaces.kafka_service_impl import KafkaServiceImpl
 from core.external_interfaces.xml_parser_service_impl import XmlPaserServiceImpl
@@ -23,12 +25,14 @@ from domain.usecases.pipeline_usecase import PipelineUsecase
 
 from domain.usecases.services.api_caller import ApiCaller
 from domain.usecases.services.edgar_service import EdgarService
+from domain.usecases.services.prompt_service import PromptService
 from domain.usecases.services.message_handler import MessageHandler
 from domain.usecases.services.xml_parser_service import XmlPaserService
 from domain.usecases.services.html_parser_service import HtmlPaserService
 
 from domain.usecases.repositories.ticker_repository import TickerRepository
 from domain.usecases.repositories.portfolio_repository import PortfolioRepository
+from domain.usecases.repositories.crosswalk_repository import CrosswalkRepository
 from domain.usecases.repositories.submission_repository import SubmissionRepository
 
 # fastapi는 의존성 부여를 endpoint에서 시작하고, 
@@ -58,12 +62,16 @@ def get_kafka_service(request: Request) -> MessageHandler:
     return request.app.state.kafka_service
 def get_edgar_service(settings: ConfigManager = Depends(get_config_manager)) -> EdgarService:
     return EdgarServiceImpl(settings)
+def get_prompt_service(settings: ConfigManager = Depends(get_config_manager)) -> PromptService:
+    return GeminiPrompt(settings)
 
 ## Repositories
 def get_ticker_repository() -> TickerRepository:
     return TickerRepositoryImpl()
 def get_portfolio_repository() -> PortfolioRepository:
     return PortfolioRepositoryImpl()
+def get_crosswalk_repository() -> CrosswalkRepository:
+    return CrosswalkRepositoryImpl()
 def get_submission_repository() -> SubmissionRepository:
     return SubmissionRepositoryImpl()
 
@@ -82,11 +90,19 @@ def get_filings_usecase(
         xml_paser_service, 
         html_paser_service
         )
-def get_pipeline_usecase() -> PipelineUsecase:
+def get_pipeline_usecase(
+        prompt_service: PromptService = Depends(get_prompt_service),
+        ticker_repository: TickerRepository = Depends(get_ticker_repository),
+        portfolio_repository: PortfolioRepository = Depends(get_portfolio_repository),
+        crosswalk_repository: CrosswalkRepository = Depends(get_crosswalk_repository),
+        submission_repository: SubmissionRepository = Depends(get_submission_repository)
+) -> PipelineUsecase:
     return PipelineUsecase(
-        ticker_repository=get_ticker_repository(), 
-        portfolio_repository=get_portfolio_repository(), 
-        submission_repository=get_submission_repository()
+        prompt_service,
+        ticker_repository, 
+        portfolio_repository, 
+        crosswalk_repository,
+        submission_repository
         )
 
 ## Connection
