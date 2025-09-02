@@ -32,3 +32,11 @@ class ConfigManager(ABC):
     @abstractmethod
     def get_mongo_db_url(self) -> str:
         pass
+
+    @abstractmethod
+    def get_document_models(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_google_api_key(self) -> str:
+        pass

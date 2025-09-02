@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List
 from domain.models.portfolios.portfolio import Portfolio
 
 class PortfolioRepository(ABC):
@@ -8,7 +8,11 @@ class PortfolioRepository(ABC):
         pass
 
     @abstractmethod
-    async def get_portfolio_by_date(self, date: str) -> Optional[Portfolio]:
+    async def get_portfolio_by_cik(self, cik: str) -> Portfolio:
+        pass
+
+    @abstractmethod
+    async def get_distinct_issuers(self, portfolio: Portfolio) -> List:
         pass
 
     @abstractmethod
