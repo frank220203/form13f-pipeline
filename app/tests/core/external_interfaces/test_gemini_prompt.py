@@ -1,5 +1,6 @@
 import pytest
 import asyncio
+from api.deps import di_manager
 from core.external_interfaces.gemini_prompt import GeminiPrompt
 
 # Kafka Consumer 통합 테스트
@@ -11,8 +12,8 @@ async def test_get_response() -> None:
     # 통합 테스트는 모킹 과정 생략
 
     # When
-    prompt = GeminiPrompt()
-    msg = await asyncio.wait_for(prompt.get_response("워렌 버핏 포트폴리오 알려줘"), timeout=5.0)
+    prompt = GeminiPrompt(di_manager.get_config_manager())
+    msg = await asyncio.wait_for(prompt.get_naics(["02005N100"]), timeout=5.0)
 
     # Then
     assert "Gemini answered" in msg

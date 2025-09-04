@@ -1,6 +1,6 @@
 from typing import List
-from core.config import Settings
 
+from domain.config_manager import ConfigManager
 from domain.models.submissions.filings.recent import Recent
 from domain.usecases.services.edgar_service import EdgarService
 
@@ -12,7 +12,7 @@ class EdgarServiceImpl(EdgarService):
     __tickers_url: str
     __submissions_url: str
 
-    def __init__(self, settings: Settings):
+    def __init__(self, settings: ConfigManager):
         self.__url = settings.get_sec_url()
         self.__data_url = settings.get_data_url()
         self.__meta_url = settings.get_meta_url()

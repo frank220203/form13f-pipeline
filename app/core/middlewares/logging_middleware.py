@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 from starlette.types import ASGIApp
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 
-from api.deps.di_manager import get_logger_manager
+from api.deps.da_manager import get_logger_manager
 
 class LoggingMiddleware(BaseHTTPMiddleware):
     def __init__(self, app: ASGIApp):
