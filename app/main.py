@@ -1,4 +1,5 @@
 # import ~~~
+import asyncio
 # from ~ import ~~~
 # from ~~ import ~~~
 # from ~~~ import ~~~
@@ -6,32 +7,33 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 # from app/~ import ~~~
-from api.deps import di_manager
+from api.deps import da_manager
 from api.routes.api_routes import ApiRoutes
 from core.middlewares.logging_middleware import LoggingMiddleware
 
 # 로거
-logger = di_manager.get_logger_manager().get_logger()
+logger = da_manager.get_logger_manager().get_logger()
 
 # 환경설정
-config_manager = di_manager.get_config_manager()
+config_manager = da_manager.get_config_manager()
 api_version = config_manager.get_api_version()
 
 # App 생명주기 관리
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info("Application lifespan startup initiated.")
-    # Kafka 실행
-    kafka_connector = di_manager.get_kafka_connection()
-    await kafka_connector.start()
-    # await kafka_connector.read()
-    logger.info("Kafka consumer is working")
-    app.state.kafka_service = kafka_connector
-    logger.info("Kafka service stored in app.state.")
     # MongoDB 실행
-    db_connector = di_manager.get_db_manager()
+    db_connector = da_manager.get_db_manager()
     await db_connector.init_db()
     logger.info("MongoDB is connected")
+    # Kafka 실행
+    kafka_connector = da_manager.get_kafka_connection()
+    await kafka_connector.start()
+    app.state.kafka_service = kafka_connector
+    logger.info("Kafka service stored in app.state.")
+    # 컨슈머 백그라운드 실행
+    asyncio.create_task(app.state.kafka_service.read())
+    logger.info("Kafka consumer is working")
 
     yield
 

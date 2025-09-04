@@ -1,12 +1,12 @@
 import importlib
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
-from core.config import Settings
 from domain.db_manager import DbManager
+from domain.config_manager import ConfigManager
 
 class BeanieRepository(DbManager):
 
-    def __init__(self, settings: Settings):
+    def __init__(self, settings: ConfigManager):
         self.__client = AsyncIOMotorClient(settings.get_mongo_db_url())
         self.__settings = settings
 
