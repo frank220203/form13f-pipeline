@@ -20,7 +20,7 @@ class KafkaServiceImpl(MessageHandler):
         self.__consumer = AIOKafkaConsumer(
             *settings.get_kafka_topic().split(","), 
             bootstrap_servers=settings.get_kafka_broker_ip(), 
-            group_id=settings.get_kafka_group_pf(), 
+            group_id=settings.get_kafka_group_pf()
             # auto_offset_reset="latest"
         )
         self.__pipeline_usecase = pipeline_usecase
@@ -43,20 +43,28 @@ class KafkaServiceImpl(MessageHandler):
         # index를 맨 앞으로 변경
         await self.__consumer.seek_to_beginning()
         async for msg in self.__consumer:
+            self.__logger.info("kafka consume start")
             msg_to_str = msg.value.decode("utf-8")
             if msg.topic == 'ticker':
+                self.__logger.info("ticker read")
                 result = await self.__pipeline_usecase.load_tickers(msg_to_str)
             elif msg.topic == 'submission':
+                self.__logger.info("submission read")
                 result = await self.__pipeline_usecase.load_submissions(msg_to_str)
             elif msg.topic == 'portfolio':
+                self.__logger.info("portfolio read")
                 result = await self.__pipeline_usecase.load_portfolios(msg_to_str)
+                await self.publish("crosswalk", result)
+            elif msg.topic == 'crosswalk':
+                self.__logger.info("crosswalk read")
+                result = await self.__pipeline_usecase.load_crosswalks(msg_to_str)
             # 단건 테스트용 break
-            break
-        log_msg = str(result)[:300]
-        if len(log_msg) > 100:
-            self.__logger.info(f"Kafka consumed message : {log_msg[:100]}")
-        else:
-            self.__logger.info(f"Kafka consumed message : {log_msg}")
+            # break
+            log_msg = str(result)[:300]
+            if len(log_msg) > 100:
+                self.__logger.info(f"Kafka consumed message : {log_msg[:100]}")
+            else:
+                self.__logger.info(f"Kafka consumed message : {log_msg}")
 
         return "Kafka consumed message"
                 

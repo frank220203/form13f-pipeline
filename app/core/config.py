@@ -23,6 +23,8 @@ class Settings(BaseSettings, ConfigManager):
     MOBGO_DB_URL: str
     DOCUMENT_MODELS: str
     GOOGLE_API_KEY: str
+    NAICS_FORMAT: str
+    NAICS_PROMPT: str
 
     def get_api_version(self) -> str:
         return self.API_VERSION
@@ -74,3 +76,9 @@ class Settings(BaseSettings, ConfigManager):
     
     def get_google_api_key(self) -> str:
         return self.GOOGLE_API_KEY
+    
+    def get_naics_format(self) -> str:
+        return self.NAICS_FORMAT
+    
+    def get_naics_prompt(self) -> str:
+        return self.NAICS_PROMPT

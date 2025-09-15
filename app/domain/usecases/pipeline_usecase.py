@@ -1,7 +1,9 @@
+import ast
 import json
 from typing import List
 
 from domain.models.ticker import Ticker
+from domain.models.crosswalk import Crosswalk
 from domain.models.portfolios.portfolio import Portfolio
 from domain.models.submissions.submission import Submission
 
@@ -68,15 +70,38 @@ class PipelineUsecase:
         except Exception as e:
             raise e     
         
-        return await self.__portfolio_repository.add_data(Portfolio(**data))
+        portfolio = await self.__portfolio_repository.add_data(Portfolio(**data))
+        sins = []
+        dup_cusip = set()
+        for issuer in portfolio.issuers:
+            if issuer.cusip not in dup_cusip:
+                sins.append({'sin':issuer.cusip, 'name':issuer.name_of_issuer})
+                dup_cusip.add(issuer.cusip)
+        msg = {'data':sins, 'type':'cusip'}
+        return msg
     
-    async def load_crosswalks(self, cik: str) -> List[dict]:
-        print(self.__portfolio_repository)
-        portfolio = await self.__portfolio_repository.get_portfolio_by_cik(cik)
-        cusips = await self.__portfolio_repository.get_distinct_issuers(portfolio)
-        request_cusips = []
-        for cusip in cusips:
-            if not await self.__crosswalk_repository.get_crosswalk_by_sin(cusip) :
-                request_cusips.append(cusip)
-        answer = await self.__prompt_service.get_naics(request_cusips)
-        return await self.__crosswalk_repository.add_data(answer)
+    async def load_crosswalks(self, data: str) -> List[dict]:
+
+        try:
+            while isinstance(data, str):
+                data = json.loads(data)
+        except Exception as e:
+            raise e     
+        
+        request_sins = []
+        for sin in data['data']:
+            if not await self.__crosswalk_repository.get_crosswalk_by_sin(Crosswalk(sin=sin['sin'], name=sin['name'])) :
+                request_sins.append(sin)
+        answer = "[]"
+        if request_sins:
+            if data['type'] == "cusip":
+                answer = await self.__prompt_service.get_naics(request_sins, data['type'])
+
+        try:
+            naics_list = ast.literal_eval(answer)
+        except Exception as e:
+            raise e  
+        
+        for naics in naics_list:
+            await self.__crosswalk_repository.add_data(Crosswalk(sin=naics['cusip'], naics=naics['naics'], industry=naics['industry']))
+        return naics_list

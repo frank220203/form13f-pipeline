@@ -7,5 +7,5 @@ class PromptService(ABC):
         pass
 
     @abstractmethod
-    async def get_naics(self, sins: List[str]) -> str:
+    async def get_naics(self, sins: List[str], type: str) -> str:
         pass
