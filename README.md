@@ -94,5 +94,5 @@ pip install beanie
 
 ### Gemini API
 ```bash
-pip install google-generativeai
+pip install google-genai
 ```

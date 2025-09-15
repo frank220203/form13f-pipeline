@@ -40,3 +40,11 @@ class ConfigManager(ABC):
     @abstractmethod
     def get_google_api_key(self) -> str:
         pass
+
+    @abstractmethod
+    def get_naics_format(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_naics_prompt(self) -> str:
+        pass

@@ -4,6 +4,7 @@ from pymongo import IndexModel
 class CrosswalkDocument(Document):
     sin: str
     naics: str
+    industry: str
 
     class Settings:
         name = "crosswalk"
