@@ -204,7 +204,7 @@ async def test_get_portfolio(
     }
 
     # Mocking
-    app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
+    # app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
 
     # When
     response = client.get(f"{api_version}/filings/portfolio?email=sample@email.com&cik=0001067983&accession_number=0000950123-25-008343")

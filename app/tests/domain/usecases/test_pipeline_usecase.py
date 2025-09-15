@@ -46,7 +46,6 @@ async def test_load_tickers(
             "Nasdaq"
         ]]
     })
-    print(load_success)
 
     # Then
     assert load_success == ticker_list
