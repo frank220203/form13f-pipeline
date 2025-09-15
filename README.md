@@ -5,13 +5,7 @@
 - 아키텍처 : 클린아키텍처, MSA(Kafka)
 - 수집 시스템 아키텍처 ```Airflow(stream) -> Uvicorn -> Kafka -> MongoDB(Local Storage) -> Kafka(fin)``` ==외부 App==> ```Kafka(fin 구독) -> MongoDB 조회 -> 외부 App DB(Shared Storage)```
 - 개발 방법 : 객체지향 + FastAPI 탬플릿 혼용, TDD
-- Spec : GCP VM e2-medium + 4GB RAM 추가, 디스크 100GB
-    - FastAPI APP : 0.5 CPU, 1 RAM
-    - 외부 DB : 1 CPU, 1 RAM, 디스크 20GB?
-    - Zookeeper : 0.5 CPU, 0.75 RAM, 디스크 10GB?, Zookeeper 1개
-    - Kafka : 1 CPU, 2.5 RAM, 디스크 10GB?, 메시지 보존기간 2일, Broker 1개
-    - Airflow : 1 CPU, 2.5 RAM, 디스크 20GB? -> spot vm으로 뺄까 생각 중 (비용적 측면은 local crontab이 최고)
-    - MongoDB : 1 CPU, 1 RAM, 디스크 10GB?
+- Spec : Web Server 및 DM만 azure 사용
 
 ### 가상환경 세팅
 - 개인 PC에 설치되는 라이브러리 버전 충돌 관리하기 위해 각자 가상환경을 세팅
