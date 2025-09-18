@@ -13,6 +13,7 @@ from domain.config_manager import ConfigManager
 from domain.usecases.filings_usecase import FilingsUsecase
 
 from domain.usecases.services.api_caller import ApiCaller
+from domain.usecases.services.dart_service import DartService
 from domain.usecases.services.edgar_service import EdgarService
 from domain.usecases.services.message_handler import MessageHandler
 from domain.usecases.services.xml_parser_service import XmlPaserService
@@ -38,6 +39,7 @@ def get_edgar_service(settings: ConfigManager = Depends(da_manager.get_config_ma
 ## Usecases
 def get_filings_usecase(
         api_caller: ApiCaller = Depends(da_manager.get_api_caller),
+        dart_service: DartService = Depends(da_manager.get_dart_service),
         edgar_service: EdgarService = Depends(get_edgar_service),
         message_handler: MessageHandler = Depends(get_kafka_service),
         xml_paser_service: XmlPaserService = Depends(da_manager.get_xml_paser_service),
@@ -45,6 +47,7 @@ def get_filings_usecase(
 ) -> FilingsUsecase:
     return FilingsUsecase(
         api_caller, 
+        dart_service,
         edgar_service, 
         message_handler, 
         xml_paser_service, 

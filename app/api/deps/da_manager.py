@@ -3,6 +3,7 @@ from core.config import Settings
 
 from core.external_interfaces.httpx_client import HttpxClient
 from core.external_interfaces.gemini_prompt import GeminiPrompt
+from core.external_interfaces.dart_service_impl import DartServiceImpl
 from core.external_interfaces.kafka_service_impl import KafkaServiceImpl
 from core.external_interfaces.xml_parser_service_impl import XmlPaserServiceImpl
 from core.external_interfaces.html_parser_service_impl import HtmlPaserServiceImpl
@@ -20,6 +21,7 @@ from domain.logger_manager import LoggerManager
 from domain.usecases.pipeline_usecase import PipelineUsecase
 
 from domain.usecases.services.api_caller import ApiCaller
+from domain.usecases.services.dart_service import DartService
 from domain.usecases.services.prompt_service import PromptService
 from domain.usecases.services.message_handler import MessageHandler
 from domain.usecases.services.xml_parser_service import XmlPaserService
@@ -58,6 +60,8 @@ def get_pipeline_usecase() -> PipelineUsecase:
 ## Services
 def get_api_caller() -> ApiCaller:
     return HttpxClient()
+def get_dart_service() -> DartService:
+    return DartServiceImpl(get_config_manager())
 def get_prompt_service() -> PromptService:
     return GeminiPrompt(get_config_manager())
 def get_xml_paser_service() -> XmlPaserService:

@@ -75,6 +75,12 @@ def mock_prompt_service() -> MagicMock:
       mock_prompt_service = MagicMock()
       return mock_prompt_service
 
+# dart_service Mock
+@pytest.fixture(scope="function")
+def mock_dart_service() -> MagicMock:
+      mock_dart_service = MagicMock()
+      return mock_dart_service
+
 # ticker_repository Mock
 @pytest.fixture(scope="function")
 def mock_ticker_repository() -> MagicMock:

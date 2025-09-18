@@ -10,7 +10,11 @@ class MessageHandler(ABC):
         pass
 
     @abstractmethod
-    async def publish(self, topic:str, msg: str) -> None:
+    async def publish(self, topic: str, msg: str) -> None:
+        pass
+
+    @abstractmethod
+    async def publish_files(self, topic: str, key: bytes, value: bytes) -> str:
         pass
 
     @abstractmethod

@@ -25,6 +25,8 @@ class Settings(BaseSettings, ConfigManager):
     GOOGLE_API_KEY: str
     NAICS_FORMAT: str
     NAICS_PROMPT: str
+    DART_API_KEY: str
+    CORP_CODE_URL: str
 
     def get_api_version(self) -> str:
         return self.API_VERSION
@@ -82,3 +84,9 @@ class Settings(BaseSettings, ConfigManager):
     
     def get_naics_prompt(self) -> str:
         return self.NAICS_PROMPT
+    
+    def get_dart_api_key(self) -> str:
+        return self.DART_API_KEY
+    
+    def get_corp_code_url(self) -> str:
+        return self.CORP_CODE_URL

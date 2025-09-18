@@ -144,71 +144,91 @@ async def test_get_portfolio(
     # Mock
     mock_filings_usecase.get_portfolio = AsyncMock()
     mock_filings_usecase.get_portfolio.return_value = {
-        "headerData": {
-            "submissionType": "13F-HR", 
-            "filerInfo": {
-                "liveTestFlag": "LIVE", 
-                "flags": {
-                    "confirmingCopyFlag": "false", 
-                    "returnCopyFlag": "true", 
-                    "overrideInternetFlag": "false"
+        'headerData': {
+            'submissionType': "13F-HR", 
+            'filerInfo': {
+                'liveTestFlag': "LIVE", 
+                'flags': {
+                    'confirmingCopyFlag': 'false', 
+                    'returnCopyFlag': 'true', 
+                    'overrideInternetFlag': 'false'
                 }, 
-                "filer": {"credentials": {
-                        "cik": "0001067983", 
-                        "ccc": "XXXXXXXX"
+                'filer': {'credentials': {
+                        'cik': "0001067983", 
+                        'ccc': "XXXXXXXX"
                     }}, 
-                "periodOfReport": "03-31-2025"
+                'periodOfReport': "03-31-2025"
             }
         },
-        "formData": {
-            "filingManager": {
-                "name": "Berkshire Hathaway Inc", 
-                "address": {
-                    "ns1:street1": "3555 Farnam Street", 
-                    "ns1:city": "Omaha", 
-                    "ns1:stateOrCountry": "NE", 
-                    "ns1:zipCode": "68131"
+        'formData': {
+            'filingManager': {
+                'name': "Berkshire Hathaway Inc", 
+                'address': {
+                    'ns1:street1': "3555 Farnam Street", 
+                    'ns1:city': "Omaha", 
+                    'ns1:stateOrCountry': "NE", 
+                    'ns1:zipCode': "68131"
                 }
             },
-            "summaryPage": {
-                "otherIncludedManagersCount": "14", 
-                "tableEntryTotal": "110", 
-                "tableValueTotal": "258701144516", 
-                "isConfidentialOmitted": "true", 
-                "otherManagers2Info": {"otherManager2": [{
-                    "sequenceNumber": "1", 
-                    "otherManager": {
-                        "form13FFileNumber": "28-2226", 
-                        "name": "Berkshire Hathaway Homestate Insurance Co."
+            'summaryPage': {
+                'otherIncludedManagersCount': "14", 
+                'tableEntryTotal': "110", 
+                'tableValueTotal': "258701144516", 
+                'isConfidentialOmitted': 'true', 
+                'otherManagers2Info': {'otherManager2': [{
+                    'sequenceNumber': "1", 
+                    'otherManager': {
+                        'form13FFileNumber': "28-2226", 
+                        'name': "Berkshire Hathaway Homestate Insurance Co."
                     }
                 }]}
             },
         },
-        "infoTable": [{
-            "nameOfIssuer": "ALLY FINL INC", 
-            "titleOfClass": "COM", 
-            "cusip": "02005N100", 
-            "value": "463886547", 
-            "shrsOrPrnAmt": {
-                "sshPrnamt": "12719675", 
-                "sshPrnamtType": "SH"
+        'infoTable': [{
+            'nameOfIssuer': "ALLY FINL INC", 
+            'titleOfClass': "COM", 
+            'cusip': "02005N100", 
+            'value': "463886547", 
+            'shrsOrPrnAmt': {
+                'sshPrnamt': "12719675", 
+                'sshPrnamtType': "SH"
             }, 
-            "investmentDiscretion": "DFND", 
-            "otherManager": "4", 
-            "votingAuthority": {
-                "Sole": "12719675", 
-                "Shared": "0", 
-                "None": "0"
+            'investmentDiscretion': "DFND", 
+            'otherManager': "4", 
+            'votingAuthority': {
+                'Sole': "12719675", 
+                'Shared': "0", 
+                'None': "0"
             }
         }]
     }
 
     # Mocking
-    # app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
+    app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
 
     # When
     response = client.get(f"{api_version}/filings/portfolio?email=sample@email.com&cik=0001067983&accession_number=0000950123-25-008343")
 
     # Then
     assert response.status_code == 200
-    assert response.json() == {"porfolio": mock_filings_usecase.get_portfolio.return_value}
+    assert response.json() == {'porfolio': mock_filings_usecase.get_portfolio.return_value}
+
+# get_corp_code 단위 테스트
+@pytest.mark.anyio
+async def test_get_corp_code(
+    client: TestClient,
+    mock_filings_usecase: MagicMock
+) -> None:
+    # Mock
+    mock_filings_usecase.get_corp_code = AsyncMock()
+    mock_filings_usecase.get_corp_code.return_value = "sample.zip"
+
+    # Mocking
+    # app.dependency_overrides[get_filings_usecase] = lambda: mock_filings_usecase
+
+    # When
+    response = client.get(f"{api_version}/filings/corpCode")
+
+    # Then
+    assert response.status_code == 200
+    assert response.json() == {'fileName': mock_filings_usecase.get_corp_code.return_value}

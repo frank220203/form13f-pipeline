@@ -48,3 +48,11 @@ class ConfigManager(ABC):
     @abstractmethod
     def get_naics_prompt(self) -> str:
         pass
+
+    @abstractmethod
+    def get_dart_api_key(self) -> str:
+        pass
+
+    @abstractmethod
+    def get_corp_code_url(self) -> str:
+        pass

@@ -216,3 +216,34 @@ async def test_get_portfolio(
 
     # Then
     assert urls == mock_xml_parser_service.xml_to_dict.return_value
+
+# get_corp_code 단위 테스트
+@pytest.mark.anyio
+async def test_get_corp_code(
+    mock_api_caller: MagicMock,
+    mock_dart_service: MagicMock,
+    mock_edgar_service: MagicMock,
+    mock_message_handler: MagicMock,
+    mock_xml_parser_service: MagicMock,
+    mock_html_parser_service: MagicMock
+) -> None:
+    # Given & Mock
+    mock_dart_service.get_corp_code_url.return_value = "https://www.A.com"
+    mock_api_caller.call_for_file = AsyncMock()
+    mock_api_caller.call_for_file.return_value = "Binary Code"
+    mock_message_handler.publish_files = AsyncMock()
+    mock_message_handler.publish_files.return_value = "file_name"
+
+    # When & Mocking
+    filings_usecase = FilingsUsecase(
+        mock_api_caller, 
+        mock_dart_service,
+        mock_edgar_service,
+        mock_message_handler,
+        mock_xml_parser_service,
+        mock_html_parser_service
+        )
+    file_name = await filings_usecase.get_corp_code()
+
+    # Then
+    assert file_name == mock_message_handler.publish_files.return_value

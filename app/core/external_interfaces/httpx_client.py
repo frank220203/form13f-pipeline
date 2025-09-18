@@ -16,3 +16,14 @@ class HttpxClient(ApiCaller):
             # 기본적으로는 도메인 주소로 API를 호출
             data = await client.get(url, headers=headers, params=params)
         return data.text
+    
+    async def call_for_file(
+            self, 
+            url: str, 
+            headers: Optional[dict] = None, 
+            params: Optional[dict] = None
+    ) -> bytes:
+        async with httpx.AsyncClient() as client:
+            if not headers:
+                data = await client.get(url, params=params)
+        return data.content

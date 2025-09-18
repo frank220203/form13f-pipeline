@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 from starlette import status
 
 from fastapi import Depends, Query
@@ -27,7 +27,7 @@ class FilingsController:
         request_dto = FilingsRequestDto(email=email)
         tickers = await filings_usecase.get_all_tickers(request_dto.headers)
 
-        return JSONResponse(content={"tickers": tickers}, status_code=status.HTTP_200_OK)
+        return JSONResponse(content={'tickers': tickers}, status_code=status.HTTP_200_OK)
     
     @filings_router.get("/submissions")
     async def get_all_submissions(
@@ -41,9 +41,9 @@ class FilingsController:
         회사의 모든 제출물 반환
         """
         request_dto = FilingsRequestDto(email=email, params={'cik': cik, 'filing_type': filing_type})
-        submissions = await filings_usecase.get_all_submissions(cik=request_dto.params["cik"], headers=request_dto.headers, filing_type=request_dto.params["filing_type"])
+        submissions = await filings_usecase.get_all_submissions(cik=request_dto.params['cik'], headers=request_dto.headers, filing_type=request_dto.params['filing_type'])
         
-        return JSONResponse(content={"submissions": submissions}, status_code=status.HTTP_200_OK)
+        return JSONResponse(content={'submissions': submissions}, status_code=status.HTTP_200_OK)
     
     @filings_router.get("/portfolio")
     async def get_portfolio(
@@ -57,9 +57,19 @@ class FilingsController:
         Portfolio Isseurs 반환.
         """
         request_dto = FilingsRequestDto(email=email, params={'cik': cik, 'accession_number': accession_number})
-        portfolio = await filings_usecase.get_portfolio(cik=request_dto.params["cik"], headers=request_dto.headers, accession_number=request_dto.params["accession_number"])
+        portfolio = await filings_usecase.get_portfolio(cik=request_dto.params['cik'], headers=request_dto.headers, accession_number=request_dto.params['accession_number'])
 
-        return JSONResponse(content={"porfolio": portfolio}, status_code=status.HTTP_200_OK)
+        return JSONResponse(content={'porfolio': portfolio}, status_code=status.HTTP_200_OK)
+    
+    # DART는 기업 개황 가져오기 전에, 기업 코드가 필수로 필요함
+    @filings_router.get("/corpCode")
+    async def get_corp_code(self, filings_usecase: FilingsUsecase = Depends(get_filings_usecase)) -> JSONResponse:
+        """
+        .zip 파일명 반환
+        """
+        file_name = await filings_usecase.get_corp_code()
+
+        return JSONResponse(content={'fileName': file_name})
     
     def get_router(self):
         return filings_router
